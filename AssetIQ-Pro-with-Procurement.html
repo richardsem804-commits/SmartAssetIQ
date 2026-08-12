@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> SmartAssetIQ — Procurement Decision Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0D12;--bg-raised:#12161D;--bg-card:#151A22;--bg-hover:#1B212B;
+  --border:#222732;--border-soft:#1A1F28;
+  --text-primary:#EDEEF1;--text-secondary:#8B92A3;--text-tertiary:#5A6273;
+  --accent:#E8A33D;--accent-soft:#3A2E1A;--accent-dim:#B8822E;
+  --success:#3DDC84;--success-soft:#16291F;
+  --danger:#FF6B5E;--danger-soft:#2E1917;
+  --warning:#F2C94C;--warning-soft:#2E2716;
+  --info:#5B9EE8;--info-soft:#16212E;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;
+  --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow-md:0 8px 24px -8px rgba(0,0,0,.55);
+  --shadow-glow:0 0 0 1px rgba(232,163,61,.16),0 6px 20px -6px rgba(232,163,61,.28);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{overflow-x:hidden;max-width:100%;}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(680px 420px at 14% -6%,rgba(232,163,61,.09),transparent 60%),
+  radial-gradient(600px 500px at 100% 12%,rgba(91,158,232,.06),transparent 55%);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;border:2px solid var(--bg);}
+.app{display:grid;grid-template-columns:224px 1fr;min-height:100vh;max-width:100vw;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg-raised);background-image:radial-gradient(circle,rgba(232,163,61,.05) 1px,transparent 1px);background-size:14px 14px;background-position:-6px -6px;border-right:1px solid var(--border-soft);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 28px;}
+.brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-dim));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px -3px rgba(232,163,61,.55);}
+.brand-mark svg{width:18px;height:18px;}
+.brand-text{font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:-0.02em;}
+.brand-sub{font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.08em;margin-top:1px;}
+.nav-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-tertiary);padding:0 12px;margin:18px 0 8px;}
+.nav-item{position:relative;display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:13.5px;font-weight:500;cursor:pointer;transition:background .15s,color .15s;}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.85;transition:opacity .15s;}
+.nav-item:hover{background:var(--bg-hover);color:var(--text-primary);}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);}
+.nav-item.active::before{content:'';position:absolute;left:-16px;top:50%;transform:translateY(-50%);width:3px;height:16px;border-radius:0 3px 3px 0;background:var(--accent);}
+.nav-item.active svg{opacity:1;}
+.nav-badge{margin-left:auto;background:var(--bg-hover);color:var(--text-tertiary);font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:20px;transition:color .15s,background .15s;}
+.nav-item.active .nav-badge{background:rgba(232,163,61,.18);color:var(--accent);}
+.sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border-soft);}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;}
+.user-card:hover{background:var(--bg-hover);}
+.user-card:hover .edit-pencil{opacity:1;}
+.edit-pencil{width:13px;height:13px;color:var(--text-tertiary);margin-left:auto;opacity:0;transition:opacity .15s;flex-shrink:0;}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5B9EE8,#3D6FB0);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:13px;color:#fff;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:600;}
+.user-role{font-size:11px;color:var(--text-tertiary);}
+.signout-link{font-size:11.5px;color:var(--text-tertiary);text-align:center;padding-top:10px;cursor:pointer;transition:color .15s;}
+.signout-link:hover{color:var(--danger);}
+#signInOverlay{display:none;}
+#signInOverlay.open{display:flex;}
+
+/* MAIN */
+.main{padding:20px clamp(14px,3vw,32px) 48px;min-width:0;max-width:100%;overflow-x:hidden;}
+.page{display:none;}
+.page.active{display:block;animation:pageIn .28s ease both;}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.page.active{animation:none}}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:24px;flex-wrap:wrap;}
+.page-title{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.page-sub{color:var(--text-secondary);font-size:13.5px;margin-top:4px;max-width:640px;}
+.topbar-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+
+/* MOBILE MENU BUTTON */
+.menu-btn{display:none;width:36px;height:36px;align-items:center;justify-content:center;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);cursor:pointer;flex-shrink:0;}
+.menu-btn svg{width:18px;height:18px;}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(5,6,9,.6);z-index:59;}
+.sidebar-backdrop.show{display:block;}
+
+/* INFO TOOLTIP (plain-language definitions) */
+.info-tip{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:var(--bg-hover);color:var(--text-tertiary);font-size:10px;font-weight:700;cursor:help;flex-shrink:0;font-family:var(--font-body);}
+.info-tip:hover{background:var(--accent-soft);color:var(--accent);}
+.def-note{background:var(--bg-raised);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--text-secondary);margin-bottom:14px;line-height:1.5;}
+.def-note b{color:var(--text-primary);}
+th .info-tip{margin-left:4px;}
+
+/* SEARCH */
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;width:220px;}
+.search-box input{background:none;border:none;outline:none;color:var(--text-primary);font-size:13px;width:100%;font-family:var(--font-body);}
+.search-box input::placeholder{color:var(--text-tertiary);}
+.search-box svg{width:15px;height:15px;color:var(--text-tertiary);flex-shrink:0;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:600;font-family:var(--font-body);border:1px solid var(--border);background:var(--bg-card);color:var(--text-primary);cursor:pointer;transition:all .15s;}
+.btn:hover{background:var(--bg-hover);border-color:#2C3242;transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn svg{width:15px;height:15px;}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#1A1305;box-shadow:0 4px 14px -4px rgba(232,163,61,.5);}
+.btn-primary:hover{background:#F0AD4E;border-color:#F0AD4E;box-shadow:0 6px 18px -4px rgba(232,163,61,.65);}
+.btn-sm{padding:6px 11px;font-size:12px;}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;}
+.stat-card{position:relative;background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);transition:transform .15s,border-color .15s,box-shadow .15s;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--stat-accent,var(--accent));opacity:.7;}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--border);box-shadow:var(--shadow-md);}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.stat-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.stat-icon svg{width:17px;height:17px;}
+.stat-value{font-family:var(--font-display);font-size:28px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px;}
+.stat-label{font-size:12.5px;color:var(--text-secondary);}
+
+/* CARDS & GRID */
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px;}
+.grid2c{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-sm);transition:border-color .15s;}
+.card:hover{border-color:var(--border);}
+.card:last-child{margin-bottom:0;}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.card-title{font-family:var(--font-display);font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.card-title svg{width:16px;height:16px;color:var(--accent);}
+.card-link{font-size:12px;color:var(--text-tertiary);cursor:pointer;font-weight:500;background:none;border:none;font-family:var(--font-body);}
+.card-link:hover{color:var(--accent);}
+
+/* TABLE */
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:600px;}
+thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-tertiary);font-weight:600;padding:0 12px 10px;border-bottom:1px solid var(--border-soft);white-space:nowrap;}
+tbody td{padding:12px 12px;font-size:13px;border-bottom:1px solid var(--border-soft);color:var(--text-secondary);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .12s;}
+tbody tr:hover{background:var(--bg-hover);}
+td.prim{color:var(--text-primary);font-weight:500;}
+
+/* STATUS PILLS */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.pill::before{content:'';width:6px;height:6px;border-radius:50%;}
+.pill-active{background:var(--success-soft);color:var(--success);}
+.pill-active::before{background:var(--success);}
+.pill-repair,.pill-pending{background:var(--warning-soft);color:var(--warning);}
+.pill-repair::before,.pill-pending::before{background:var(--warning);}
+.pill-storage,.pill-active2{background:var(--info-soft);color:var(--info);}
+.pill-storage::before,.pill-active2::before{background:var(--info);}
+.pill-out,.pill-inactive{background:var(--danger-soft);color:var(--danger);}
+.pill-out::before,.pill-inactive::before{background:var(--danger);}
+
+/* STATUS SELECT */
+.status-select{font-size:11.5px;font-weight:600;padding:4px 8px;border-radius:20px;border:1px solid transparent;cursor:pointer;font-family:var(--font-body);appearance:none;}
+
+/* ROW ACTIONS */
+.row-actions{display:flex;gap:6px;}
+.rib{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--border-soft);background:transparent;color:var(--text-tertiary);cursor:pointer;}
+.rib:hover{background:var(--bg-hover);color:var(--text-primary);}
+.rib.del:hover{color:var(--danger);border-color:var(--danger);background:var(--danger-soft);}
+.rib svg{width:13px;height:13px;}
+
+/* ICON THUMB */
+.thumb{width:32px;height:32px;border-radius:7px;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.thumb svg{width:15px;height:15px;color:var(--accent);}
+.name-cell{display:flex;align-items:center;gap:10px;}
+.name-sub{font-size:11px;color:var(--text-tertiary);}
+
+/* ACTIVITY */
+.activity-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border-soft);}
+.activity-item:last-child{border-bottom:none;padding-bottom:0;}
+.activity-item:first-child{padding-top:0;}
+.act-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg-hover);}
+.act-icon svg{width:13px;height:13px;color:var(--text-secondary);}
+.act-text{font-size:13px;}
+.act-meta{font-size:11.5px;color:var(--text-tertiary);margin-top:2px;}
+.tag{display:inline-flex;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.03em;margin-right:5px;}
+.tag-success{background:var(--success-soft);color:var(--success);}
+.tag-info{background:var(--info-soft);color:var(--info);}
+.tag-warning{background:var(--warning-soft);color:var(--warning);}
+.tag-danger{background:var(--danger-soft);color:var(--danger);}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;gap:24px;}
+.legend{display:flex;flex-direction:column;gap:11px;flex:1;}
+.legend-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;}
+.legend-left{display:flex;align-items:center;gap:8px;color:var(--text-secondary);}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* BARS */
+.bar-row{margin-bottom:13px;}
+.bar-row:last-child{margin-bottom:0;}
+.bar-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px;gap:8px;}
+.bar-label{color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-val{font-weight:600;flex-shrink:0;}
+.bar-track{height:7px;background:var(--bg-hover);border-radius:20px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:20px;}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-tertiary);}
+.empty-state svg{width:36px;height:36px;margin-bottom:12px;opacity:.4;}
+.empty-state p{font-size:13px;}
+.empty-note{font-size:12.5px;color:var(--text-tertiary);padding:6px 0;}
+
+/* REPORT CARD */
+.report-card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.report-card:hover{border-color:var(--border);}
+.report-left{display:flex;align-items:center;gap:12px;}
+.report-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.report-icon svg{width:17px;height:17px;}
+.report-name{font-weight:600;font-size:13.5px;}
+.report-meta{font-size:12px;color:var(--text-tertiary);margin-top:2px;}
+.report-actions{display:flex;gap:8px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,6,9,.75);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:540px;padding:24px;box-shadow:0 24px 60px -12px rgba(0,0,0,.6);animation:modalIn .18s ease both;}
+@keyframes modalIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.modal{animation:none}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.modal-title{font-family:var(--font-display);font-size:18px;font-weight:700;}
+.modal-close{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-soft);background:transparent;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:var(--bg-hover);color:var(--text-primary);}
+.modal-close svg{width:14px;height:14px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.ff{margin-bottom:0;}
+.ff.full{grid-column:1/-1;}
+.ff label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:5px;font-weight:500;}
+.ff input,.ff select,.ff textarea{width:100%;padding:9px 11px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:13px;font-family:var(--font-body);outline:none;resize:vertical;}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--accent);}
+.ff .hint{font-size:11px;color:var(--text-tertiary);margin-top:4px;}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border-soft);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 18px;font-size:13px;display:flex;align-items:center;gap:10px;z-index:200;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast svg{width:15px;height:15px;color:var(--success);flex-shrink:0;}
+
+/* RATING STARS */
+.stars{color:var(--accent);font-size:13px;letter-spacing:2px;}
+
+/* MODULE PIPELINE STRIP (procurement flow) */
+.flow-strip{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.flow-step{display:flex;align-items:center;gap:8px;background:var(--bg-card);border:1px solid var(--border-soft);border-radius:20px;padding:7px 14px 7px 10px;font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap;}
+.flow-step.here{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.flow-step .fn{width:18px;height:18px;border-radius:50%;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.flow-step.here .fn{background:var(--accent);color:#1A1305;}
+.flow-arrow{color:var(--text-tertiary);flex-shrink:0;}
+.link-chip{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--info-soft);color:var(--info);white-space:nowrap;}
+
+@media(max-width:1100px){
+  .app{grid-template-columns:1fr;}
+  .sidebar{position:fixed;top:0;left:0;height:100vh;width:260px;z-index:60;transform:translateX(-100%);transition:transform .2s ease;display:flex;}
+  .sidebar.mobile-open{transform:translateX(0);}
+  .menu-btn{display:flex;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .grid2,.grid2c,.form-grid{grid-template-columns:1fr;}
+  table{min-width:520px;}
+}
+@media(max-width:640px){
+  .stats-row{grid-template-columns:1fr;}
+  .page-title{font-size:20px;}
+  .modal{padding:18px;}
+  .flow-step span.lbl{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeMobileNav()"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1A1305" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </div>
+    <div><div class="brand-text">SmartAssetIQ</div><div class="brand-sub">Decision Support</div></div>
+  </div>
+
+  <div class="nav-section-label">Overview</div>
+  <div class="nav-item active" id="nav-dashboard" onclick="goTo('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-item" id="nav-assets" onclick="goTo('assets')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg>
+    Assets
+    <span class="nav-badge" id="nb-assets">0</span>
+  </div>
+  <div class="nav-item" id="nav-people" onclick="goTo('people')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    People
+    <span class="nav-badge" id="nb-people">0</span>
+  </div>
+  <div class="nav-item" id="nav-vendors" onclick="goTo('vendors')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg>
+    Vendors
+    <span class="nav-badge" id="nb-vendors">0</span>
+  </div>
+
+  <div class="nav-section-label">Procurement</div>
+  <div class="nav-item" id="nav-pr" onclick="goTo('pr')" title="Purchase Requisitions — internal requests to buy something">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
+    Requisitions
+    <span class="nav-badge" id="nb-pr">0</span>
+  </div>
+  <div class="nav-item" id="nav-rfq" onclick="goTo('rfq')" title="Request for Quotations — asking suppliers to submit a price">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M9 10h.01M13 10h.01M17 10h.01"/></svg>
+    RFQs
+    <span class="nav-badge" id="nb-rfq">0</span>
+  </div>
+  <div class="nav-item" id="nav-quote" onclick="goTo('quote')" title="Quotations — the prices and terms suppliers send back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><path d="M9 7h7M9 11h7"/></svg>
+    Quotations
+    <span class="nav-badge" id="nb-quote">0</span>
+  </div>
+  <div class="nav-item" id="nav-selection" onclick="goTo('selection')" title="Supplier Selection — choosing the winning quotation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a6 6 0 100-12 6 6 0 000 12z"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/></svg>
+    Supplier Selection
+    <span class="nav-badge" id="nb-selection">0</span>
+  </div>
+  <div class="nav-item" id="nav-po" onclick="goTo('po')" title="Purchase Orders — the official order sent to the chosen supplier">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
+    Purchase Orders
+    <span class="nav-badge" id="nb-po">0</span>
+  </div>
+  <div class="nav-item" id="nav-grn" onclick="goTo('grn')" title="Goods Received Notes — proof of what actually arrived">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+    GRNs
+    <span class="nav-badge" id="nb-grn">0</span>
+  </div>
+
+  <div class="nav-section-label">Insights</div>
+  <div class="nav-item" id="nav-ai" onclick="goTo('ai')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.8L20 9.5l-6.1 1.7L12 17l-1.9-5.8L4 9.5l6.1-1.7z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z"/></svg>
+    AI Recommendations
+    <span class="nav-badge" id="nb-ai">0</span>
+  </div>
+  <a class="nav-item" href="AssetIQ-AI-Insights-Hub.html" target="_blank" rel="noopener" style="text-decoration:none;color:var(--text-tertiary);font-size:12px;padding:6px 12px 6px 30px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;opacity:.7"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+    Open AI Insights Hub
+  </a>
+  <div class="nav-item" id="nav-reports" onclick="goTo('reports')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+    Reports
+    <span class="nav-badge" id="nb-reports">0</span>
+  </div>
+  <div class="nav-item" id="nav-audits" onclick="goTo('audits')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    Audits
+  </div>
+
+  <div class="nav-section-label">System</div>
+  <div class="nav-item" onclick="if(confirm('Reset all data to demo defaults?'))resetAll()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+    Reset demo data
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-card" id="userCard" onclick="openProfileModal()" title="Edit your name and position">
+      <div class="avatar" id="userAvatar">JS</div>
+      <div><div class="user-name" id="userNameDisplay">John Smith</div><div class="user-role" id="userRoleDisplay">Procurement Lead</div></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="edit-pencil"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>
+    </div>
+    <div class="signout-link" onclick="signOut()">Sign out</div>
+  </div>
+</aside>
+
+<!-- ===== SIGN-IN OVERLAY ===== -->
+<div class="modal-overlay" id="signInOverlay" style="align-items:center;">
+  <div class="modal" style="max-width:400px;text-align:center;">
+    <div class="brand-mark" style="margin:0 auto 16px;width:44px;height:44px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1A1305" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </div>
+    <div class="modal-title" style="margin-bottom:6px;">Sign in to SmartAssetIQ</div>
+    <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px;">Tell us who's using this device. You can change this anytime from the sidebar.</p>
+    <div class="ff" style="margin-bottom:12px;text-align:left;"><label>Your name *</label><input type="text" id="si_name" placeholder="e.g. Sarah Nangolo"></div>
+    <div class="ff" style="margin-bottom:18px;text-align:left;"><label>Your position</label><input type="text" id="si_role" placeholder="e.g. Fleet Manager"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="completeSignIn()">Enter SmartAssetIQ</button>
+    <p style="color:var(--text-tertiary);font-size:11.5px;margin-top:14px;">This is a local profile stored on this device — there's no password, so treat it as a name tag, not a security login.</p>
+  </div>
+</div>
+
+<!-- ===== PROFILE MODAL ===== -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-head">
+      <div class="modal-title">Edit profile</div>
+      <button class="modal-close" onclick="closeModal('profileModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="ff" style="margin-bottom:12px;"><label>Name</label><input type="text" id="pf_name" placeholder="e.g. Sarah Nangolo"></div>
+    <div class="ff" style="margin-bottom:18px;"><label>Position</label><input type="text" id="pf_role" placeholder="e.g. Fleet Manager"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveProfile()">Save profile</button>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+<button class="menu-btn" onclick="openMobileNav()" style="margin-bottom:16px" aria-label="Open menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- ── DASHBOARD ── -->
+<div class="page active" id="page-dashboard">
+  <div class="topbar">
+    <div><div class="page-title">Dashboard</div><div class="page-sub" id="dateLine">Overview</div></div>
+    <div class="topbar-actions">
+      <a class="btn" href="AssetIQ-AI-Insights-Hub.html" target="_blank" rel="noopener" style="text-decoration:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.8L20 9.5l-6.1 1.7L12 17l-1.9-5.8L4 9.5l6.1-1.7z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z"/></svg>AI Insights Hub
+      </a>
+      <button class="btn btn-primary" onclick="goTo('assets');setTimeout(openAssetModal,50)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New asset
+      </button>
+    </div>
+  </div>
+  <div class="stats-row" id="dash-stats"></div>
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>System activity</div></div>
+      <div id="dash-activity"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>Asset status</div></div>
+      <div class="donut-wrap"><svg width="140" height="140" viewBox="0 0 140 140" id="donutSvg"></svg><div class="legend" id="donutLegend"></div></div>
+    </div>
+  </div>
+  <div class="grid2c">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/></svg>Repair / replace thresholds</div></div>
+      <div id="dash-thresholds"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Fleet value by category</div></div>
+      <div id="dash-catbars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ASSETS ── -->
+<div class="page" id="page-assets">
+  <div class="topbar">
+    <div><div class="page-title">Assets</div><div class="page-sub">Full asset register</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="assetSearch" placeholder="Search assets..." oninput="renderAssetTable()"></div>
+      <input type="file" id="csvImportInput" accept=".csv,text/csv" style="display:none" onchange="handleCSVImport(event)">
+      <button class="btn" onclick="document.getElementById('csvImportInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import CSV</button>
+      <button class="btn" onclick="exportCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
+      <button class="btn btn-primary" onclick="openAssetModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New asset</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Asset</th><th>Category</th><th>Purchase price</th><th>Repairs to date</th><th>Repair %<span class="info-tip" title="How much has been spent repairing this asset, as a percentage of what it would cost to replace it.">i</span></th><th>Book value<span class="info-tip" title="What the asset is worth on paper today, after subtracting depreciation from the purchase price.">i</span></th><th>Equiv. annual cost<span class="info-tip" title="The whole-life cost of owning this asset (purchase, repairs, running costs) spread evenly over each year of its useful life.">i</span></th><th>Status</th><th>Assigned to</th><th></th></tr></thead>
+      <tbody id="assetTableBody"></tbody>
+    </table></div>
+    <div id="assetEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><p>No assets yet. Click "New asset" to add your first one.</p></div>
+  </div>
+</div>
+
+<!-- ── PEOPLE ── -->
+<div class="page" id="page-people">
+  <div class="topbar">
+    <div><div class="page-title">People</div><div class="page-sub">Staff and asset custodians</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="peopleSearch" placeholder="Search people..." oninput="renderPeopleTable()"></div>
+      <button class="btn btn-primary" onclick="openPeopleModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add person</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Name</th><th>Role / Department</th><th>Email</th><th>Phone</th><th>Assets assigned</th><th>Status</th><th></th></tr></thead>
+      <tbody id="peopleTableBody"></tbody>
+    </table></div>
+    <div id="peopleEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No people added yet. Click "Add person" to start.</p></div>
+  </div>
+</div>
+
+<!-- ── VENDORS ── -->
+<div class="page" id="page-vendors">
+  <div class="topbar">
+    <div><div class="page-title">Vendors</div><div class="page-sub">Suppliers and service providers</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="vendorSearch" placeholder="Search vendors..." oninput="renderVendorTable()"></div>
+      <button class="btn btn-primary" onclick="openVendorModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add vendor</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Vendor</th><th>Category</th><th>Contact person</th><th>Phone / Email</th><th>Rating</th><th>Status</th><th></th></tr></thead>
+      <tbody id="vendorTableBody"></tbody>
+    </table></div>
+    <div id="vendorEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><p>No vendors yet. Click "Add vendor" to start.</p></div>
+  </div>
+</div>
+
+<!-- ── PURCHASE REQUISITIONS ── -->
+<div class="page" id="page-pr">
+  <div class="topbar">
+    <div><div class="page-title">Requisitions<span class="info-tip" title="A Purchase Requisition (PR) is an internal request — e.g. from a department — asking permission to buy something. Nothing is ordered from a supplier yet.">i</span></div><div class="page-sub">Internal requests to buy goods or services, waiting for approval before anything is ordered.</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="prSearch" placeholder="Search requisitions..." oninput="renderModuleTable('pr')"></div>
+      <button class="btn btn-primary" onclick="openModuleModal('pr')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New requisition</button>
+    </div>
+  </div>
+  <div class="flow-strip" id="flow-pr"></div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Requisition</th><th>Department</th><th>Needed by</th><th>Priority</th><th>Est. cost</th><th>Status</th><th></th></tr></thead>
+      <tbody id="prTableBody"></tbody>
+    </table></div>
+    <div id="prEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg><p>No requisitions yet. Click "New requisition" to request a purchase.</p></div>
+  </div>
+</div>
+
+<!-- ── RFQs ── -->
+<div class="page" id="page-rfq">
+  <div class="topbar">
+    <div><div class="page-title">RFQs<span class="info-tip" title="A Request for Quotation (RFQ) is a document sent to suppliers asking them to submit their price and terms for specific goods or services.">i</span></div><div class="page-sub">Requests sent out to suppliers asking them to quote a price for what you need.</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="rfqSearch" placeholder="Search RFQs..." oninput="renderModuleTable('rfq')"></div>
+      <button class="btn btn-primary" onclick="openModuleModal('rfq')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New RFQ</button>
+    </div>
+  </div>
+  <div class="flow-strip" id="flow-rfq"></div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>RFQ</th><th>Linked requisition</th><th>Items requested</th><th>Vendors invited</th><th>Response due</th><th>Status</th><th></th></tr></thead>
+      <tbody id="rfqTableBody"></tbody>
+    </table></div>
+    <div id="rfqEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><p>No RFQs yet. Click "New RFQ" to ask suppliers for pricing.</p></div>
+  </div>
+</div>
+
+<!-- ── QUOTATIONS ── -->
+<div class="page" id="page-quote">
+  <div class="topbar">
+    <div><div class="page-title">Quotations<span class="info-tip" title="A Quotation is the price and terms a supplier sends back in response to an RFQ. Collect quotations from more than one supplier to compare before deciding.">i</span></div><div class="page-sub">The prices and terms each supplier offered, so you can compare them side by side.</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="quoteSearch" placeholder="Search quotations..." oninput="renderModuleTable('quote')"></div>
+      <button class="btn btn-primary" onclick="openModuleModal('quote')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Log quotation</button>
+    </div>
+  </div>
+  <div class="flow-strip" id="flow-quote"></div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Quotation</th><th>Linked RFQ</th><th>Supplier</th><th>Quoted price</th><th>Delivery time</th><th>Valid until</th><th>Status</th><th></th></tr></thead>
+      <tbody id="quoteTableBody"></tbody>
+    </table></div>
+    <div id="quoteEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg><p>No quotations logged yet. Add one from each supplier that responded to an RFQ.</p></div>
+  </div>
+</div>
+
+<!-- ── SUPPLIER SELECTION ── -->
+<div class="page" id="page-selection">
+  <div class="topbar">
+    <div><div class="page-title">Supplier Selection<span class="info-tip" title="Supplier Selection is the decision step: comparing quotations from different suppliers and formally choosing (and justifying) the winner before a Purchase Order is raised.">i</span></div><div class="page-sub">Compare quotations and record which supplier was chosen, and why.</div></div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="openModuleModal('selection')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Record decision</button>
+    </div>
+  </div>
+  <div class="flow-strip" id="flow-selection"></div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Decision</th><th>Linked RFQ</th><th>Selected supplier</th><th>Winning price</th><th>Reason chosen</th><th>Status</th><th></th></tr></thead>
+      <tbody id="selectionTableBody"></tbody>
+    </table></div>
+    <div id="selectionEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg><p>No supplier decisions recorded yet.</p></div>
+  </div>
+</div>
+
+<!-- ── PURCHASE ORDERS ── -->
+<div class="page" id="page-po">
+  <div class="topbar">
+    <div><div class="page-title">Purchase Orders<span class="info-tip" title="A Purchase Order (PO) is the official, binding order you send to the chosen supplier, confirming what you're buying, at what price, and when you need it.">i</span></div><div class="page-sub">The official order sent to the winning supplier, confirming what's being bought and for how much.</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="poSearch" placeholder="Search purchase orders..." oninput="renderModuleTable('po')"></div>
+      <button class="btn btn-primary" onclick="openModuleModal('po')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New purchase order</button>
+    </div>
+  </div>
+  <div class="flow-strip" id="flow-po"></div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>PO</th><th>Supplier</th><th>Items ordered</th><th>Order value</th><th>Order date</th><th>Expected delivery</th><th>Status</th><th></th></tr></thead>
+      <tbody id="poTableBody"></tbody>
+    </table></div>
+    <div id="poEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/></svg><p>No purchase orders yet. Click "New purchase order" to raise one.</p></div>
+  </div>
+</div>
+
+<!-- ── GRNs ── -->
+<div class="page" id="page-grn">
+  <div class="topbar">
+    <div><div class="page-title">GRNs<span class="info-tip" title="A Goods Received Note (GRN) is the record made when items actually arrive — confirming what was delivered, in what condition, and matching it against the Purchase Order.">i</span></div><div class="page-sub">Proof of what actually arrived from a supplier, checked against the purchase order.</div></div>
+    <div class="topbar-actions">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input id="grnSearch" placeholder="Search GRNs..." oninput="renderModuleTable('grn')"></div>
+      <button class="btn btn-primary" onclick="openModuleModal('grn')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New GRN</button>
+    </div>
+  </div>
+  <div class="flow-strip" id="flow-grn"></div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>GRN</th><th>Linked PO</th><th>Supplier</th><th>Received</th><th>Qty ordered / received</th><th>Condition</th><th>Status</th><th></th></tr></thead>
+      <tbody id="grnTableBody"></tbody>
+    </table></div>
+    <div id="grnEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg><p>No goods received notes yet.</p></div>
+  </div>
+</div>
+
+<!-- ── AI RECOMMENDATIONS ── -->
+<div class="page" id="page-ai">
+  <div class="topbar">
+    <div><div class="page-title" style="background:linear-gradient(90deg,var(--text-primary),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">AI Recommendations</div><div class="page-sub">AI-assisted repair / replace / procure guidance across your fleet</div></div>
+    <div class="topbar-actions">
+      <a class="btn" href="AssetIQ-AI-Insights-Hub.html" target="_blank" rel="noopener" style="text-decoration:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>AI Insights Hub</a>
+      <button class="btn" onclick="runAIEngine()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>Recalculate</button>
+      <button class="btn btn-primary" id="aiGenBtn" onclick="generateAINarrative()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.8L20 9.5l-6.1 1.7L12 17l-1.9-5.8L4 9.5l6.1-1.7z"/></svg>Generate AI narrative</button>
+    </div>
+  </div>
+  <div class="card" style="padding:14px 20px;">
+    <div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;">
+      <div class="ff" style="max-width:180px"><label>Discount rate (%)</label><input type="number" id="fin_discount" step="0.5" oninput="onFinSettingsChange()"></div>
+      <div class="ff" style="max-width:220px"><label>Annual procurement budget (N$)</label><input type="number" id="fin_budget" step="1000" oninput="onFinSettingsChange()"></div>
+      <div style="font-size:12px;color:var(--text-tertiary);max-width:420px;padding-bottom:9px">Used to appraise each "Replace" recommendation as an investment: replacement cost now vs. estimated operating/repair savings over the asset's useful life.</div>
+    </div>
+  </div>
+  <div class="stats-row" id="ai-stats"></div>
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.8L20 9.5l-6.1 1.7L12 17l-1.9-5.8L4 9.5l6.1-1.7z"/></svg>AI narrative summary</div></div>
+      <div id="ai-narrative"><p class="empty-note">Click "Generate AI narrative" for a written summary of fleet priorities, or see the scored table below (calculated instantly, no AI needed).</p></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Top 5 priority actions</div></div>
+      <div id="ai-priority-list"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:0">
+    <div class="card-head"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>All assets — AI-scored recommendation &amp; financial appraisal</div></div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Asset</th><th>Category</th><th>Urgency</th><th>Recommendation</th><th>NPV<span class="info-tip" title="Net Present Value: the estimated total money saved (or lost) by replacing this asset, in today's currency terms.">i</span></th><th>IRR<span class="info-tip" title="Internal Rate of Return: the yearly return this replacement is expected to generate. Higher is better.">i</span></th><th>Payback<span class="info-tip" title="How many years it takes for the savings from replacement to cover the replacement cost.">i</span></th><th>Risk score<span class="info-tip" title="How risky this recommendation is, from 0 (low risk) to 100 (high risk), based on data quality and financial confidence.">i</span></th><th>Priority score<span class="info-tip" title="How urgently this asset should be actioned, from 0 to 100, combining condition, financial case and risk.">i</span></th><th>Budget impact<span class="info-tip" title="What share of your annual procurement budget this replacement would use up.">i</span></th><th>Why</th></tr></thead>
+      <tbody id="aiTableBody"></tbody>
+    </table></div>
+    <div id="aiEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg><p>Add assets to see AI recommendations here.</p></div>
+  </div>
+</div>
+
+<!-- ── REPORTS ── -->
+<div class="page" id="page-reports">
+  <div class="topbar">
+    <div><div class="page-title">Reports</div><div class="page-sub">Analysis reports and procurement decisions</div></div>
+    <div class="topbar-actions">
+      <button class="btn btn-primary" onclick="openReportModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New report</button>
+    </div>
+  </div>
+  <div id="reportsList"></div>
+  <div id="reportsEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><p>No reports yet. Click "New report" to create your first analysis.</p></div>
+</div>
+
+<!-- ── AUDITS ── -->
+<div class="page" id="page-audits">
+  <div class="topbar">
+    <div><div class="page-title">Audits</div><div class="page-sub">Full activity log</div></div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="if(confirm('Clear all audit logs?')){saveLog([]);renderAudits();showToast('Audit log cleared')}">Clear log</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:0;padding-bottom:4px;">
+    <div class="table-scroll"><table>
+      <thead><tr><th>Time</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody id="auditTableBody"></tbody>
+    </table></div>
+    <div id="auditEmpty" class="empty-state" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><p>No activity logged yet.</p></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Asset modal -->
+<div class="modal-overlay" id="assetModal">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="assetModalTitle">Add new asset</div><button class="modal-close" onclick="closeModal('assetModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <input type="hidden" id="a_id">
+    <div class="ff full" style="margin-bottom:12px"><label>Asset name *</label><input id="a_name" placeholder="e.g. Toyota Hilux GP 4521"></div>
+    <div class="form-grid" style="gap:12px">
+      <div class="ff"><label>Category</label><select id="a_cat"><option>Vehicle</option><option>Power</option><option>Construction</option><option>Warehouse</option><option>IT equipment</option><option>Other</option></select></div>
+      <div class="ff"><label>Status</label><select id="a_status"><option value="active">Active</option><option value="repair">In repair</option><option value="storage">In storage</option><option value="out">Out for repair</option></select></div>
+      <div class="ff"><label>Purchase price (N$) *</label><input type="number" id="a_price" placeholder="350000"></div>
+      <div class="ff"><label>Replacement cost (N$)</label><input type="number" id="a_rep" placeholder="420000"></div>
+      <div class="ff"><label>Repairs to date (N$)</label><input type="number" id="a_repairs" placeholder="45000"><div class="hint" style="font-size:11px;color:var(--text-tertiary);margin-top:3px">Used to calculate repair/replace %</div></div>
+      <div class="ff"><label>Assigned to</label><input id="a_assigned" placeholder="e.g. S. Smith"></div>
+      <div class="ff"><label>Purchase date</label><input type="date" id="a_pdate"></div>
+      <div class="ff"><label>Useful life (years)</label><input type="number" id="a_life" placeholder="5"></div>
+      <div class="ff"><label>Salvage value (N$)</label><input type="number" id="a_salvage" placeholder="20000"><div class="hint" style="font-size:11px;color:var(--text-tertiary);margin-top:3px">Estimated resale/scrap value at end of life</div></div>
+      <div class="ff"><label>Annual operating cost (N$)</label><input type="number" id="a_opcost" placeholder="35000"><div class="hint" style="font-size:11px;color:var(--text-tertiary);margin-top:3px">Fuel, servicing, insurance, etc. per year</div></div>
+    </div>
+
+    <div class="modal-footer"><button class="btn" onclick="closeModal('assetModal')">Cancel</button><button class="btn btn-primary" onclick="saveAsset()">Save asset</button></div>
+  </div>
+</div>
+
+<!-- People modal -->
+<div class="modal-overlay" id="peopleModal">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="peopleModalTitle">Add person</div><button class="modal-close" onclick="closeModal('peopleModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <input type="hidden" id="p_id">
+    <div class="form-grid" style="gap:12px">
+      <div class="ff"><label>First name *</label><input id="p_fname" placeholder="John"></div>
+      <div class="ff"><label>Last name *</label><input id="p_lname" placeholder="Smith"></div>
+      <div class="ff"><label>Role / Job title</label><input id="p_role" placeholder="Fleet Manager"></div>
+      <div class="ff"><label>Department</label><input id="p_dept" placeholder="Operations"></div>
+      <div class="ff"><label>Email</label><input id="p_email" placeholder="john@company.com" type="email"></div>
+      <div class="ff"><label>Phone</label><input id="p_phone" placeholder="+264 81 000 0000"></div>
+      <div class="ff"><label>Status</label><select id="p_status"><option value="active2">Active</option><option value="inactive">Inactive</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('peopleModal')">Cancel</button><button class="btn btn-primary" onclick="savePerson()">Save person</button></div>
+  </div>
+</div>
+
+<!-- Vendor modal -->
+<div class="modal-overlay" id="vendorModal">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="vendorModalTitle">Add vendor</div><button class="modal-close" onclick="closeModal('vendorModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <input type="hidden" id="v_id">
+    <div class="ff full" style="margin-bottom:12px"><label>Vendor / Company name *</label><input id="v_name" placeholder="e.g. Namibia Fleet Services"></div>
+    <div class="form-grid" style="gap:12px">
+      <div class="ff"><label>Category</label><select id="v_cat"><option>Vehicle maintenance</option><option>IT services</option><option>Construction equipment</option><option>Power & generators</option><option>Office supplies</option><option>Fuel & energy</option><option>Other</option></select></div>
+      <div class="ff"><label>Rating (1-5)</label><select id="v_rating"><option value="5">★★★★★ Excellent</option><option value="4">★★★★ Good</option><option value="3">★★★ Average</option><option value="2">★★ Below average</option><option value="1">★ Poor</option></select></div>
+      <div class="ff"><label>Contact person</label><input id="v_contact" placeholder="Jane Doe"></div>
+      <div class="ff"><label>Phone</label><input id="v_phone" placeholder="+264 61 000 0000"></div>
+      <div class="ff"><label>Email</label><input id="v_email" placeholder="contact@vendor.com" type="email"></div>
+      <div class="ff"><label>Status</label><select id="v_status"><option value="active">Active</option><option value="pending">Pending approval</option><option value="inactive">Inactive</option></select></div>
+      <div class="ff full"><label>Notes</label><textarea id="v_notes" rows="2" placeholder="Any notes about this vendor..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('vendorModal')">Cancel</button><button class="btn btn-primary" onclick="saveVendor()">Save vendor</button></div>
+  </div>
+</div>
+
+<!-- Report modal -->
+<div class="modal-overlay" id="reportModal">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="reportModalTitle">New report</div><button class="modal-close" onclick="closeModal('reportModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <input type="hidden" id="r_id">
+    <div class="ff full" style="margin-bottom:12px"><label>Report title *</label><input id="r_title" placeholder="e.g. Q2 Fleet Replacement Analysis"></div>
+    <div class="form-grid" style="gap:12px">
+      <div class="ff"><label>Report type</label><select id="r_type"><option>Repair vs Replace</option><option>Whole Life Cost</option><option>Procurement Decision</option><option>Asset Audit</option><option>Budget Forecast</option><option>Vendor Evaluation</option><option>Other</option></select></div>
+      <div class="ff"><label>Decision outcome</label><select id="r_decision"><option value="">-- Select --</option><option value="replace">Replace</option><option value="repair">Repair</option><option value="monitor">Monitor</option><option value="procure">Procure new</option><option value="pending">Pending</option></select></div>
+      <div class="ff"><label>Asset / subject</label><input id="r_asset" placeholder="e.g. Hilux GP 4521"></div>
+      <div class="ff"><label>Estimated saving (N$)</label><input type="number" id="r_saving" placeholder="85000"></div>
+      <div class="ff full"><label>Summary / findings *</label><textarea id="r_summary" rows="3" placeholder="What did this analysis find? What is the recommendation?"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('reportModal')">Cancel</button><button class="btn btn-primary" onclick="saveReport()">Save report</button></div>
+  </div>
+</div>
+
+<!-- Generic Procurement modal (used for Requisitions, RFQs, Quotations, Supplier Selection, Purchase Orders, GRNs) -->
+<div class="modal-overlay" id="genModal">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-title" id="genModalTitle">New record</div><button class="modal-close" onclick="closeModal('genModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="def-note" id="genModalDef"></div>
+    <input type="hidden" id="gen_key"><input type="hidden" id="gen_id">
+    <div class="form-grid" id="genModalFields" style="gap:12px"></div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('genModal')">Cancel</button><button class="btn btn-primary" onclick="saveModuleRecord()">Save</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span id="toastMsg">Saved</span></div>
+
+<script>
+/* ===== STORAGE KEYS ===== */
+const SK = { assets:'aiq_assets', people:'aiq_people', vendors:'aiq_vendors', reports:'aiq_reports', log:'aiq_log', settings:'aiq_settings', user:'aiq_user',
+  pr:'aiq_pr', rfq:'aiq_rfq', quote:'aiq_quote', selection:'aiq_selection', po:'aiq_po', grn:'aiq_grn' };
+const MODULE_KEYS=['pr','rfq','quote','selection','po','grn'];
+let moduleData={};
+
+/* ===== SEED DATA ===== */
+const SEED = {
+  assets:[
+    {id:'AST-00031',name:'Toyota Hilux GP 4521',category:'Vehicle',price:385000,replacement:420000,repairs:95000,status:'active',assigned:'S. Smith',purchaseDate:'2022-03-01',usefulLife:7,salvage:60000,opCost:48000},
+    {id:'AST-00030',name:'Generator Cat C9 250kVA',category:'Power',price:612000,replacement:650000,repairs:410000,status:'repair',assigned:'Unassigned',purchaseDate:'2019-06-15',usefulLife:10,salvage:80000,opCost:52000},
+    {id:'AST-00864',name:'Excavator CAT 320 GC',category:'Construction',price:1240000,replacement:1450000,repairs:180000,status:'active',assigned:'P. Nangolo',purchaseDate:'2021-01-10',usefulLife:8,salvage:150000,opCost:95000},
+    {id:'AST-00798',name:'Forklift Toyota 8FGU25',category:'Warehouse',price:198500,replacement:215000,repairs:152000,status:'out',assigned:'Unassigned',purchaseDate:'2018-09-01',usefulLife:6,salvage:15000,opCost:22000},
+    {id:'AST-00712',name:'Dell Latitude 5440 (x12)',category:'IT equipment',price:144000,replacement:156000,repairs:12000,status:'storage',assigned:'IT Dept.',purchaseDate:'2023-11-01',usefulLife:4,salvage:10000,opCost:8000},
+  ],
+  people:[
+    {id:'P-001',fname:'John',lname:'Smith',role:'Procurement Lead',dept:'Management',email:'john@company.com',phone:'+264 81 100 0001',status:'active2'},
+    {id:'P-002',fname:'Sarah',lname:'Nangolo',role:'Fleet Manager',dept:'Operations',email:'sarah@company.com',phone:'+264 81 200 0002',status:'active2'},
+  ],
+  vendors:[
+    {id:'V-001',name:'Namibia Fleet Services',category:'Vehicle maintenance',contact:'Tom Brown',phone:'+264 61 300 001',email:'tom@nfs.na',rating:4,status:'active',notes:'Main vehicle service provider'},
+    {id:'V-002',name:'PowerGen Namibia',category:'Power & generators',contact:'Anna Shilongo',phone:'+264 61 400 002',email:'anna@powegen.na',rating:5,status:'active',notes:''},
+  ],
+  reports:[],
+  pr:[
+    {id:'PR-001',title:'Replace ageing forklift',department:'Warehouse',neededBy:'2026-08-15',priority:'High',estCost:200000,status:'Approved',notes:'Forklift AST-00798 has high repair costs relative to replacement.'}
+  ],
+  rfq:[
+    {id:'RFQ-001',title:'Forklift replacement RFQ',linkedPR:'PR-001',items:'1x diesel forklift, 2.5 ton capacity',vendorIds:['V-001','V-002'],dueDate:'2026-07-20',status:'Quotes received',notes:''}
+  ],
+  quote:[
+    {id:'QT-001',linkedRFQ:'RFQ-001',vendor:'V-001',itemsQuoted:'Toyota 8FGU25 2.5t forklift',price:205000,deliveryTime:'3 weeks',validUntil:'2026-08-01',status:'Under review'},
+    {id:'QT-002',linkedRFQ:'RFQ-001',vendor:'V-002',itemsQuoted:'Hyster 2.5t forklift',price:198000,deliveryTime:'5 weeks',validUntil:'2026-08-05',status:'Under review'}
+  ],
+  selection:[
+    {id:'SEL-001',linkedRFQ:'RFQ-001',vendor:'V-002',winningQuote:'QT-002',price:198000,reason:'Lowest price within budget; vendor has a strong service history.',status:'Approved'}
+  ],
+  po:[
+    {id:'PO-001',linkedSelection:'SEL-001',linkedPR:'PR-001',vendor:'V-002',items:'1x Hyster 2.5t forklift',value:198000,orderDate:'2026-06-20',expectedDelivery:'2026-07-25',status:'Issued'}
+  ],
+  grn:[
+    {id:'GRN-001',linkedPO:'PO-001',vendor:'V-002',dateReceived:'',receivedBy:'',qtyOrdered:1,qtyReceived:0,condition:'Good',status:'Pending inspection',notes:''}
+  ]
+};
+
+/* ===== DATA LAYER ===== */
+function load(key){ try{ return JSON.parse(localStorage.getItem(SK[key]))||null; }catch(e){return null;} }
+function save(key,data){ localStorage.setItem(SK[key],JSON.stringify(data)); }
+function loadLog(){ return load('log')||[]; }
+function saveLog(l){ save('log',l.slice(0,50)); }
+function pushLog(type,text){ const l=loadLog(); l.unshift({type,text,time:new Date().toISOString()}); saveLog(l); }
+
+let assets, people, vendors, reports, finSettings;
+const DEFAULT_SETTINGS={discountRate:12,budget:2000000};
+function loadSettings(){ return {...DEFAULT_SETTINGS, ...(load('settings')||{})}; }
+function saveSettings(s){ save('settings',s); }
+function loadAll(){
+  assets=load('assets')||[...SEED.assets];
+  people=load('people')||[...SEED.people];
+  vendors=load('vendors')||[...SEED.vendors];
+  reports=load('reports')||[...SEED.reports];
+  finSettings=loadSettings();
+  MODULE_KEYS.forEach(k=>{ moduleData[k]=load(k)||JSON.parse(JSON.stringify(SEED[k]||[])); });
+}
+function saveAll(){ save('assets',assets); save('people',people); save('vendors',vendors); save('reports',reports); saveSettings(finSettings); MODULE_KEYS.forEach(k=>save(k,moduleData[k])); }
+
+function resetAll(){
+  assets=[...SEED.assets]; people=[...SEED.people]; vendors=[...SEED.vendors]; reports=[...SEED.reports]; finSettings={...DEFAULT_SETTINGS};
+  MODULE_KEYS.forEach(k=>{ moduleData[k]=JSON.parse(JSON.stringify(SEED[k]||[])); });
+  saveAll(); saveLog([]);
+  renderAll(); showToast('Demo data restored');
+}
+
+/* ===== HELPERS ===== */
+const fmt=n=>'N$'+Math.round(n||0).toLocaleString();
+function repairPct(a){ if(!a.replacement||a.replacement<=0)return 0; return Math.round((a.repairs/a.replacement)*100); }
+
+/* ===== WHOLE LIFE ASSET MANAGEMENT FORMULAS ===== */
+// 1. Age of the asset in years (decimal), based on purchase date
+function assetAgeYears(a){
+  if(!a.purchaseDate) return 0;
+  const ms = Date.now() - new Date(a.purchaseDate).getTime();
+  return Math.max(0, ms / (1000*60*60*24*365.25));
+}
+// 2. Straight-line annual depreciation = (Purchase price - Salvage value) / Useful life
+function annualDepreciation(a){
+  const life = a.usefulLife || 1;
+  return Math.max(0, (a.price - (a.salvage||0)) / life);
+}
+// 3. Current book value = Purchase price - (Annual depreciation x Age), floored at salvage value
+function bookValue(a){
+  const dep = annualDepreciation(a) * assetAgeYears(a);
+  return Math.max(a.salvage||0, a.price - dep);
+}
+// 4. Remaining useful life = Useful life - Age (years), floored at 0
+function remainingUsefulLife(a){
+  return Math.max(0, (a.usefulLife||0) - assetAgeYears(a));
+}
+// 5. Total Cost of Ownership (TCO) to date
+//    = Purchase price + Repairs to date + (Annual operating cost x Age) - Salvage value
+function totalCostOfOwnership(a){
+  const opCostToDate = (a.opCost||0) * assetAgeYears(a);
+  return a.price + (a.repairs||0) + opCostToDate - (a.salvage||0);
+}
+// 6. Equivalent Annual Cost (EAC) — whole-life cost spread evenly over useful life
+//    = (Purchase price - Salvage value + total repairs + (Annual operating cost x Useful life)) / Useful life
+function equivalentAnnualCost(a){
+  const life = a.usefulLife || 1;
+  const lifetimeCost = (a.price - (a.salvage||0)) + (a.repairs||0) + ((a.opCost||0) * life);
+  return lifetimeCost / life;
+}
+// 7. Cost per year actually incurred so far = Total Cost of Ownership / Age
+function costPerYearOwned(a){
+  const age = assetAgeYears(a);
+  return age > 0 ? totalCostOfOwnership(a) / age : totalCostOfOwnership(a);
+}
+// 8. Replacement urgency score (0-100) — blends repair burden and age used up
+//    60% weight on repair-to-replacement ratio, 40% weight on life consumed
+function replacementUrgencyScore(a){
+  const lifeConsumedPct = a.usefulLife ? Math.min(100, (assetAgeYears(a)/a.usefulLife)*100) : 0;
+  return Math.round(repairPct(a)*0.6 + lifeConsumedPct*0.4);
+}
+function statusLabel(s){ return{active:'Active',repair:'In repair',storage:'In storage',out:'Out for repair',active2:'Active',inactive:'Inactive',pending:'Pending'}[s]||s; }
+function pillClass(s){ return{active:'pill-active',repair:'pill-repair',storage:'pill-storage',out:'pill-out',active2:'pill-active2',inactive:'pill-inactive',pending:'pill-pending'}[s]||'pill-active'; }
+function timeAgo(iso){ const d=Math.floor((Date.now()-new Date(iso).getTime())/1000); if(d<60)return d+'s ago'; if(d<3600)return Math.floor(d/60)+'m ago'; if(d<86400)return Math.floor(d/3600)+'h ago'; return Math.floor(d/86400)+'d ago'; }
+function genId(prefix,list){ const nums=list.map(x=>parseInt((x.id.match(/\d+/)||['0'])[0])); const n=(nums.length?Math.max(...nums):0)+1; return prefix+String(n).padStart(3,'0'); }
+function stars(n){ return '★'.repeat(n)+'☆'.repeat(5-n); }
+function esc(s){ if(s===undefined||s===null)return ''; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(d){ if(!d)return '—'; try{ return new Date(d).toLocaleDateString(); }catch(e){ return d; } }
+function vendorLabel(id){ if(!id)return '—'; const v=vendors.find(x=>x.id===id); return v?esc(v.name):id; }
+function lookupLabel(key,id){ if(!id)return '—'; const rec=(moduleData[key]||[]).find(x=>x.id===id); if(!rec)return id; const t=rec.title||rec.name||''; return `${rec.id}${t?' — '+esc(t.length>28?t.slice(0,28)+'…':t):''}`; }
+function statusColor(s){
+  if(!s)return{bg:'var(--bg-hover)',c:'var(--text-tertiary)'};
+  const low=String(s).toLowerCase();
+  if(['approved','accepted','issued','received','selected','good','converted','closed'].some(k=>low.includes(k)))return{bg:'var(--success-soft)',c:'var(--success)'};
+  if(['rejected','cancelled','damaged'].some(k=>low.includes(k)))return{bg:'var(--danger-soft)',c:'var(--danger)'};
+  if(['pending','draft','under review','recommended','sent','partially'].some(k=>low.includes(k)))return{bg:'var(--warning-soft)',c:'var(--warning)'};
+  return{bg:'var(--info-soft)',c:'var(--info)'};
+}
+function statusPill(s){ const c=statusColor(s); return `<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:${c.bg};color:${c.c};white-space:nowrap;display:inline-block">${esc(s||'—')}</span>`; }
+function priorityBadge(p){ const map={Low:'var(--success)',Medium:'var(--info)',High:'var(--warning)',Urgent:'var(--danger)'}; const c=map[p]||'var(--text-tertiary)'; return `<span style="font-weight:700;color:${c}">${esc(p||'—')}</span>`; }
+const MODULE_ICONS={
+  pr:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/>',
+  rfq:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M9 10h.01M13 10h.01M17 10h.01"/>',
+  quote:'<path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><path d="M9 7h7M9 11h7"/>',
+  selection:'<path d="M12 15a6 6 0 100-12 6 6 0 000 12z"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/>',
+  po:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/>',
+  grn:'<path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>'
+};
+function moduleIconSvg(key){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${MODULE_ICONS[key]||MODULE_ICONS.pr}</svg>`; }
+
+/* ===== PROCUREMENT PIPELINE ENGINE =====
+   One config-driven engine powers Requisitions, RFQs, Quotations, Supplier
+   Selection, Purchase Orders and GRNs so every module shares the same
+   look, search, add/edit/delete and cross-linking behaviour. */
+const MODULES={
+  pr:{
+    label:'Purchase Requisition',
+    def:'A Purchase Requisition (PR) is an internal request — for example from a department — asking permission to buy something. Nothing is ordered from a supplier yet; it just starts the approval process.',
+    prefix:'PR-',
+    required:['title'],
+    fields:[
+      {id:'title',label:'What is needed *',type:'text',placeholder:'e.g. 20 laptops for Finance dept',full:true},
+      {id:'department',label:'Department / Requested by',type:'text',placeholder:'Finance'},
+      {id:'neededBy',label:'Needed by',type:'date'},
+      {id:'priority',label:'Priority',type:'select',options:['Low','Medium','High','Urgent'],default:'Medium'},
+      {id:'estCost',label:'Estimated cost (N$)',type:'number',placeholder:'200000'},
+      {id:'status',label:'Status',type:'select',options:['Draft','Pending approval','Approved','Rejected','Converted to RFQ'],default:'Draft'},
+      {id:'notes',label:'Justification / notes',type:'textarea',full:true,placeholder:'Why is this needed?'}
+    ],
+    search:r=>[r.title,r.department],
+    row:r=>`<td><div class="name-cell"><div class="thumb">${moduleIconSvg('pr')}</div><div><div class="prim">${esc(r.title)}</div><div class="name-sub">${r.id}</div></div></div></td><td>${esc(r.department)||'—'}</td><td>${fmtDate(r.neededBy)}</td><td>${priorityBadge(r.priority)}</td><td class="prim">${r.estCost?fmt(r.estCost):'—'}</td><td>${statusPill(r.status)}</td>`
+  },
+  rfq:{
+    label:'RFQ',
+    def:'A Request for Quotation (RFQ) is sent to one or more suppliers, asking them to submit their price and terms for specific goods or services.',
+    prefix:'RFQ-',
+    required:['title','items'],
+    fields:[
+      {id:'title',label:'RFQ title *',type:'text',placeholder:'e.g. Forklift replacement RFQ',full:true},
+      {id:'linkedPR',label:'Linked requisition',type:'select',dynamic:'pr',allowNone:true},
+      {id:'items',label:'Items / description needed *',type:'textarea',full:true,placeholder:'What exactly are you asking suppliers to quote on?'},
+      {id:'vendorIds',label:'Vendors invited to quote',type:'checkboxGroup',dynamic:'vendors'},
+      {id:'dueDate',label:'Response due date',type:'date'},
+      {id:'status',label:'Status',type:'select',options:['Draft','Sent','Quotes received','Closed'],default:'Draft'},
+      {id:'notes',label:'Notes',type:'textarea',full:true}
+    ],
+    search:r=>[r.title,r.items],
+    row:r=>`<td><div class="name-cell"><div class="thumb">${moduleIconSvg('rfq')}</div><div><div class="prim">${esc(r.title)}</div><div class="name-sub">${r.id}</div></div></div></td><td>${r.linkedPR?`<span class="link-chip">${lookupLabel('pr',r.linkedPR)}</span>`:'—'}</td><td style="max-width:220px">${esc(r.items)||'—'}</td><td>${(r.vendorIds&&r.vendorIds.length)?r.vendorIds.map(vendorLabel).join(', '):'—'}</td><td>${fmtDate(r.dueDate)}</td><td>${statusPill(r.status)}</td>`
+  },
+  quote:{
+    label:'Quotation',
+    def:'A Quotation is the price and terms a supplier sends back in response to an RFQ. Log the quotation from each supplier that responds so they can be compared.',
+    prefix:'QT-',
+    required:['vendor','price'],
+    fields:[
+      {id:'linkedRFQ',label:'Linked RFQ',type:'select',dynamic:'rfq',allowNone:true},
+      {id:'vendor',label:'Supplier *',type:'select',dynamic:'vendors'},
+      {id:'itemsQuoted',label:'Items quoted',type:'textarea',full:true},
+      {id:'price',label:'Quoted price (N$) *',type:'number',placeholder:'198000'},
+      {id:'deliveryTime',label:'Delivery time',type:'text',placeholder:'e.g. 3 weeks'},
+      {id:'validUntil',label:'Valid until',type:'date'},
+      {id:'status',label:'Status',type:'select',options:['Received','Under review','Selected','Rejected'],default:'Received'}
+    ],
+    search:r=>[vendorLabel(r.vendor),r.itemsQuoted],
+    row:r=>`<td><div class="name-cell"><div class="thumb">${moduleIconSvg('quote')}</div><div><div class="prim">${r.id}</div><div class="name-sub">${vendorLabel(r.vendor)}</div></div></div></td><td>${r.linkedRFQ?`<span class="link-chip">${lookupLabel('rfq',r.linkedRFQ)}</span>`:'—'}</td><td>${vendorLabel(r.vendor)}</td><td class="prim">${r.price?fmt(r.price):'—'}</td><td>${esc(r.deliveryTime)||'—'}</td><td>${fmtDate(r.validUntil)}</td><td>${statusPill(r.status)}</td>`
+  },
+  selection:{
+    label:'Supplier Selection',
+    def:'Supplier Selection is the decision step: comparing the quotations received and formally choosing — and justifying — the winning supplier before a Purchase Order is raised.',
+    prefix:'SEL-',
+    required:['vendor','reason'],
+    fields:[
+      {id:'linkedRFQ',label:'Linked RFQ',type:'select',dynamic:'rfq',allowNone:true},
+      {id:'vendor',label:'Selected supplier *',type:'select',dynamic:'vendors'},
+      {id:'winningQuote',label:'Winning quotation',type:'select',dynamic:'quote',allowNone:true},
+      {id:'price',label:'Winning price (N$)',type:'number'},
+      {id:'reason',label:'Reason chosen *',type:'textarea',full:true,placeholder:'Why was this supplier selected over the others?'},
+      {id:'status',label:'Status',type:'select',options:['Recommended','Approved','Rejected'],default:'Recommended'}
+    ],
+    search:r=>[vendorLabel(r.vendor),r.reason],
+    row:r=>`<td><div class="name-cell"><div class="thumb">${moduleIconSvg('selection')}</div><div><div class="prim">${r.id}</div><div class="name-sub">Decision</div></div></div></td><td>${r.linkedRFQ?`<span class="link-chip">${lookupLabel('rfq',r.linkedRFQ)}</span>`:'—'}</td><td class="prim">${vendorLabel(r.vendor)}</td><td class="prim">${r.price?fmt(r.price):'—'}</td><td style="max-width:220px">${esc(r.reason)||'—'}</td><td>${statusPill(r.status)}</td>`
+  },
+  po:{
+    label:'Purchase Order',
+    def:'A Purchase Order (PO) is the official, binding order sent to the chosen supplier, confirming what is being bought, at what price, and by when.',
+    prefix:'PO-',
+    required:['vendor','items','value'],
+    fields:[
+      {id:'linkedSelection',label:'Linked supplier selection',type:'select',dynamic:'selection',allowNone:true},
+      {id:'linkedPR',label:'Linked requisition',type:'select',dynamic:'pr',allowNone:true},
+      {id:'vendor',label:'Supplier *',type:'select',dynamic:'vendors'},
+      {id:'items',label:'Items ordered *',type:'textarea',full:true},
+      {id:'value',label:'Order value (N$) *',type:'number'},
+      {id:'orderDate',label:'Order date',type:'date'},
+      {id:'expectedDelivery',label:'Expected delivery',type:'date'},
+      {id:'status',label:'Status',type:'select',options:['Draft','Issued','Partially received','Received','Cancelled'],default:'Draft'}
+    ],
+    search:r=>[vendorLabel(r.vendor),r.items],
+    row:r=>`<td><div class="name-cell"><div class="thumb">${moduleIconSvg('po')}</div><div><div class="prim">${r.id}</div><div class="name-sub">${r.linkedSelection?lookupLabel('selection',r.linkedSelection):(r.linkedPR?lookupLabel('pr',r.linkedPR):'Purchase order')}</div></div></div></td><td class="prim">${vendorLabel(r.vendor)}</td><td style="max-width:220px">${esc(r.items)||'—'}</td><td class="prim">${r.value?fmt(r.value):'—'}</td><td>${fmtDate(r.orderDate)}</td><td>${fmtDate(r.expectedDelivery)}</td><td>${statusPill(r.status)}</td>`
+  },
+  grn:{
+    label:'Goods Received Note',
+    def:'A Goods Received Note (GRN) is created when items actually arrive — confirming what was delivered, in what condition, and checking it against the Purchase Order.',
+    prefix:'GRN-',
+    required:['linkedPO'],
+    fields:[
+      {id:'linkedPO',label:'Linked purchase order *',type:'select',dynamic:'po'},
+      {id:'vendor',label:'Supplier',type:'select',dynamic:'vendors',allowNone:true},
+      {id:'dateReceived',label:'Date received',type:'date'},
+      {id:'receivedBy',label:'Received by',type:'text',placeholder:'e.g. Warehouse clerk name'},
+      {id:'qtyOrdered',label:'Quantity ordered',type:'number'},
+      {id:'qtyReceived',label:'Quantity received',type:'number'},
+      {id:'condition',label:'Condition',type:'select',options:['Good','Damaged','Partial'],default:'Good'},
+      {id:'status',label:'Status',type:'select',options:['Pending inspection','Accepted','Partially accepted','Rejected'],default:'Pending inspection'},
+      {id:'notes',label:'Notes',type:'textarea',full:true}
+    ],
+    search:r=>[vendorLabel(r.vendor),r.receivedBy],
+    row:r=>`<td><div class="name-cell"><div class="thumb">${moduleIconSvg('grn')}</div><div><div class="prim">${r.id}</div><div class="name-sub">${r.linkedPO?lookupLabel('po',r.linkedPO):'GRN'}</div></div></div></td><td>${r.linkedPO?`<span class="link-chip">${lookupLabel('po',r.linkedPO)}</span>`:'—'}</td><td>${vendorLabel(r.vendor)}</td><td>${fmtDate(r.dateReceived)}</td><td>${r.qtyOrdered||0} / ${r.qtyReceived||0}</td><td>${statusPill(r.condition)}</td><td>${statusPill(r.status)}</td>`
+  }
+};
+const FLOW=[['pr','1','Requisition'],['rfq','2','RFQ'],['quote','3','Quotations'],['selection','4','Supplier selection'],['po','5','Purchase order'],['grn','6','GRN']];
+function buildFlowStrip(key){
+  const el=document.getElementById('flow-'+key); if(!el)return;
+  el.innerHTML=FLOW.map(([k,n,label],idx)=>`${idx>0?'<span class="flow-arrow">→</span>':''}<div class="flow-step ${k===key?'here':''}" title="${MODULES[k].label}"><span class="fn">${n}</span><span class="lbl">${label}</span></div>`).join('');
+}
+function fieldOptions(f){
+  if(f.dynamic==='vendors')return vendors.map(v=>({value:v.id,label:v.name}));
+  if(f.dynamic)return (moduleData[f.dynamic]||[]).map(r=>({value:r.id,label:`${r.id} — ${(r.title||r.name||'').slice(0,32)}`}));
+  return (f.options||[]).map(o=>({value:o,label:o}));
+}
+function renderGenField(f,rec){
+  const val=rec?rec[f.id]:(f.default!==undefined?f.default:'');
+  const wrapClass=f.full?'ff full':'ff';
+  if(f.type==='textarea')return `<div class="${wrapClass}"><label>${f.label}</label><textarea id="gf_${f.id}" rows="2" placeholder="${esc(f.placeholder||'')}">${esc(val)}</textarea></div>`;
+  if(f.type==='select'){
+    const opts=fieldOptions(f);
+    let leading='';
+    if(f.allowNone)leading='<option value="">-- None --</option>';
+    else if(f.default===undefined)leading='<option value="">-- Select --</option>';
+    const optHtml=leading+opts.map(o=>`<option value="${esc(o.value)}" ${String(val)===String(o.value)?'selected':''}>${esc(o.label)}</option>`).join('');
+    return `<div class="${wrapClass}"><label>${f.label}</label><select id="gf_${f.id}">${optHtml}</select></div>`;
+  }
+  if(f.type==='checkboxGroup'){
+    const opts=fieldOptions(f);
+    const selected=Array.isArray(val)?val:[];
+    const boxes=opts.map(o=>`<label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--text-primary);padding:4px 0"><input type="checkbox" name="gcb_${f.id}" value="${esc(o.value)}" ${selected.includes(o.value)?'checked':''}> ${esc(o.label)}</label>`).join('');
+    return `<div class="ff full"><label>${f.label}</label><div style="max-height:120px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 11px;background:var(--bg-raised)">${boxes||'<span style="color:var(--text-tertiary);font-size:12px">No vendors added yet — add one on the Vendors page first.</span>'}</div></div>`;
+  }
+  return `<div class="${wrapClass}"><label>${f.label}</label><input type="${f.type}" id="gf_${f.id}" placeholder="${esc(f.placeholder||'')}" value="${val!==undefined&&val!==null?esc(val):''}"></div>`;
+}
+function collectGenField(f){
+  if(f.type==='checkboxGroup')return Array.from(document.querySelectorAll(`input[name="gcb_${f.id}"]:checked`)).map(el=>el.value);
+  const el=document.getElementById('gf_'+f.id); if(!el)return '';
+  if(f.type==='number')return parseFloat(el.value)||0;
+  return el.value.trim();
+}
+function openModuleModal(key,id){
+  const cfg=MODULES[key];
+  document.getElementById('gen_key').value=key;
+  document.getElementById('gen_id').value=id||'';
+  document.getElementById('genModalTitle').textContent=(id?'Edit ':'New ')+cfg.label;
+  document.getElementById('genModalDef').innerHTML=`<b>${cfg.label}:</b> ${cfg.def}`;
+  const rec=id?(moduleData[key]||[]).find(x=>x.id===id):null;
+  document.getElementById('genModalFields').innerHTML=cfg.fields.map(f=>renderGenField(f,rec)).join('');
+  document.getElementById('genModal').classList.add('open');
+}
+function saveModuleRecord(){
+  const key=document.getElementById('gen_key').value;
+  const id=document.getElementById('gen_id').value;
+  const cfg=MODULES[key];
+  const d={};
+  cfg.fields.forEach(f=>{ d[f.id]=collectGenField(f); });
+  const missing=(cfg.required||[]).some(rf=>{ const v=d[rf]; return v===undefined||v===null||v===''||(Array.isArray(v)&&v.length===0); });
+  if(missing){ showToast('Please fill in the required field(s).',true); return; }
+  if(id){
+    const arr=moduleData[key]; const i=arr.findIndex(x=>x.id===id); if(i>-1)arr[i]={...arr[i],...d};
+    pushLog('updated',`<b>${cfg.label} ${id}</b> updated`); showToast(cfg.label+' updated');
+  }else{
+    const arr=moduleData[key]; const rec={id:genId(cfg.prefix,arr),...d}; arr.unshift(rec);
+    pushLog('created',`<b>${cfg.label} ${rec.id}</b> created`); showToast(cfg.label+' saved');
+  }
+  save(key,moduleData[key]); closeModal('genModal'); renderAll();
+}
+function deleteModuleRecord(key,id){
+  const cfg=MODULES[key]; const arr=moduleData[key]; const rec=arr.find(x=>x.id===id); if(!rec)return;
+  if(!confirm(`Delete ${cfg.label} "${id}"?`))return;
+  moduleData[key]=arr.filter(x=>x.id!==id); save(key,moduleData[key]);
+  pushLog('deleted',`${cfg.label} <b>${id}</b> removed`); showToast(cfg.label+' deleted'); renderAll();
+}
+function rowActionsHtml(key,id){
+  return `<div class="row-actions"><button class="rib" onclick="openModuleModal('${key}','${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button><button class="rib del" onclick="deleteModuleRecord('${key}','${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg></button></div>`;
+}
+function renderModuleTable(key){
+  const cfg=MODULES[key];
+  const searchEl=document.getElementById(key+'Search');
+  const q=(searchEl?searchEl.value:'').toLowerCase();
+  const arr=moduleData[key]||[];
+  const filtered=q?arr.filter(r=>cfg.search(r).some(s=>(s||'').toString().toLowerCase().includes(q))):arr;
+  const body=document.getElementById(key+'TableBody');
+  const empty=document.getElementById(key+'Empty');
+  buildFlowStrip(key);
+  if(!filtered.length){ body.innerHTML=''; if(empty)empty.style.display='block'; return; }
+  if(empty)empty.style.display='none';
+  body.innerHTML=filtered.map(r=>`<tr>${cfg.row(r)}<td>${rowActionsHtml(key,r.id)}</td></tr>`).join('');
+}
+
+/* ===== AI RECOMMENDATION ENGINE =====
+   Rule-based scoring runs instantly, offline, on every asset — no API needed.
+   "Generate AI narrative" additionally asks Claude to turn the scored table
+   into a written summary; if that call isn't available it falls back to a
+   locally-composed summary so the page always works. */
+function aiConfidence(a){
+  let pts=0;
+  if(a.purchaseDate)pts++;
+  if(a.usefulLife)pts++;
+  if(a.opCost)pts++;
+  if(a.salvage!==undefined && a.salvage!==null && a.salvage!=='')pts++;
+  if(pts>=4)return'High'; if(pts>=2)return'Medium'; return'Low';
+}
+/* ===== PROCUREMENT FINANCIAL ENGINE =====
+   Appraises "Replace" decisions as an investment: pay the replacement cost
+   now, in exchange for reduced repair/operating cost over the new asset's
+   useful life, discounted at the configurable discount rate. */
+function categoryRiskFactor(cat){ return {Vehicle:40,Power:55,Construction:50,Warehouse:35,'IT equipment':60,Other:45}[cat]||45; }
+function replacementCashflow(a){
+  const age=assetAgeYears(a);
+  const repairRunRate = age>0 ? (a.repairs||0)/age : 0;
+  const oldAnnualCost=(a.opCost||0)+repairRunRate;
+  const newAnnualCost=(a.opCost||0)*0.85;
+  return Math.max(0, oldAnnualCost-newAnnualCost);
+}
+function npvSeries(a){
+  const n=Math.max(1,Math.round(a.usefulLife||5));
+  const C0=a.replacement||a.price||0;
+  const cf=replacementCashflow(a);
+  const arr=[-C0];
+  for(let t=1;t<n;t++)arr.push(cf);
+  arr.push(cf+(a.salvage||0));
+  return arr;
+}
+function npvAtRate(arr,r){ return arr.reduce((s,c,t)=>s+c/Math.pow(1+r,t),0); }
+function npv(a){ return npvAtRate(npvSeries(a),(finSettings.discountRate||12)/100); }
+function irr(a){
+  const arr=npvSeries(a);
+  if(arr.slice(1).every(c=>c<=0))return null;
+  let lo=null,hi=null;
+  for(let r=-0.9;r<5;r+=0.02){
+    if(npvAtRate(arr,r)*npvAtRate(arr,r+0.02)<0){lo=r;hi=r+0.02;break;}
+  }
+  if(lo===null)return null;
+  for(let i=0;i<60;i++){
+    const mid=(lo+hi)/2;
+    const fMid=npvAtRate(arr,mid);
+    if(Math.abs(fMid)<1)return mid;
+    if((npvAtRate(arr,lo)<0)===(fMid<0))lo=mid; else hi=mid;
+  }
+  return (lo+hi)/2;
+}
+function paybackPeriod(a){ const cf=replacementCashflow(a); if(cf<=0)return null; return (a.replacement||a.price||0)/cf; }
+function riskScore(a){
+  const conf=aiConfidence(a);
+  const confRisk=conf==='Low'?80:conf==='Medium'?45:15;
+  const pb=paybackPeriod(a);
+  const pbRisk=pb===null?100:Math.min(100,pb*12);
+  const theIrr=irr(a);
+  const r=(finSettings.discountRate||12)/100;
+  const irrRisk=theIrr===null?90:(theIrr<r?Math.min(100,(r-theIrr)*300+40):Math.max(0,40-(theIrr-r)*200));
+  const score=0.3*categoryRiskFactor(a.category)+0.25*confRisk+0.25*pbRisk+0.2*irrRisk;
+  return Math.round(Math.max(0,Math.min(100,score)));
+}
+function priorityScore(a){
+  const urgency=replacementUrgencyScore(a);
+  const C0=a.replacement||a.price||1;
+  const npvScore=Math.max(0,Math.min(100,50+(npv(a)/C0)*50));
+  const theIrr=irr(a);
+  const r=(finSettings.discountRate||12)/100;
+  const irrScore=theIrr===null?20:Math.max(0,Math.min(100,50+(theIrr-r)*200));
+  const risk=riskScore(a);
+  const score=0.35*urgency+0.3*npvScore+0.2*irrScore+0.15*(100-risk);
+  return Math.round(Math.max(0,Math.min(100,score)));
+}
+function budgetImpact(a){ return ((a.replacement||a.price||0)/(finSettings.budget||1))*100; }
+function fmtIrr(a){ const v=irr(a); return v===null?'N/A':(v*100).toFixed(1)+'%'; }
+function fmtPayback(a){ const v=paybackPeriod(a); return v===null?'N/A':v.toFixed(1)+' yrs'; }
+
+function aiRecommend(a){
+  const urgency=replacementUrgencyScore(a);
+  const rp=repairPct(a);
+  const life=remainingUsefulLife(a);
+  const eac=equivalentAnnualCost(a);
+  let rec,why,color;
+  if(a.status==='out'||urgency>=70||rp>=60){
+    rec='Replace';color='var(--danger)';
+    why=`Repairs are at ${rp}% of replacement cost and the urgency score is ${urgency}/100 — this asset is costing more to keep than to renew.`;
+  }else if(urgency>=45||rp>=35||(life<=0.75&&life>0)){
+    rec='Repair & monitor';color='var(--warning)';
+    why=`Urgency score is ${urgency}/100 with ${life.toFixed(1)} yrs of useful life left. Budget for near-term repair or early replacement planning.`;
+  }else if(a.status==='storage'){
+    rec='Review utilisation';color='var(--info)';
+    why=`Asset has been idle in storage — confirm it's still needed before its whole-life cost (${fmt(eac)}/yr) continues to accrue.`;
+  }else{
+    rec='Keep in service';color='var(--success)';
+    why=`Low urgency score (${urgency}/100), repairs at only ${rp}% of replacement cost, and ${life.toFixed(1)} yrs of useful life remaining.`;
+  }
+  return{rec,why,color,urgency,confidence:aiConfidence(a)};
+}
+function renderAI(){
+  const el=document.getElementById('ai-stats');
+  const dInput=document.getElementById('fin_discount'), bInput=document.getElementById('fin_budget');
+  if(dInput && document.activeElement!==dInput) dInput.value=finSettings.discountRate;
+  if(bInput && document.activeElement!==bInput) bInput.value=finSettings.budget;
+  if(!assets.length){
+    el.innerHTML='';
+    document.getElementById('aiTableBody').innerHTML='';
+    document.getElementById('aiEmpty').style.display='block';
+    document.getElementById('ai-priority-list').innerHTML='<p class="empty-note">No assets to score yet.</p>';
+    return;
+  }
+  document.getElementById('aiEmpty').style.display='none';
+  const scored=assets.map(a=>{
+    const r=aiRecommend(a);
+    const fin={npv:npv(a),irr:irr(a),payback:paybackPeriod(a),risk:riskScore(a),priority:priorityScore(a),budget:budgetImpact(a)};
+    return{a,r,fin};
+  });
+  const nReplace=scored.filter(s=>s.r.rec==='Replace').length;
+  const nRepair=scored.filter(s=>s.r.rec==='Repair & monitor').length;
+  const nKeep=scored.filter(s=>s.r.rec==='Keep in service'||s.r.rec==='Review utilisation').length;
+  const avgUrgency=Math.round(scored.reduce((s,x)=>s+x.r.urgency,0)/scored.length);
+  const avgRisk=Math.round(scored.reduce((s,x)=>s+x.fin.risk,0)/scored.length);
+  const portfolioNpv=scored.filter(s=>s.r.rec==='Replace').reduce((s,x)=>s+x.fin.npv,0);
+  const totalBudgetImpact=scored.filter(s=>s.r.rec==='Replace').reduce((s,x)=>s+x.fin.budget,0);
+  const cards=[
+    {bg:'var(--danger-soft)',c:'var(--danger)',ic:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/>',val:nReplace,label:'Recommended: Replace'},
+    {bg:'var(--warning-soft)',c:'var(--warning)',ic:'<path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>',val:nRepair,label:'Recommended: Repair & monitor'},
+    {bg:'var(--success-soft)',c:'var(--success)',ic:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',val:nKeep,label:'Recommended: Keep in service'},
+    {bg:'var(--info-soft)',c:'var(--info)',ic:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',val:avgUrgency+'/100',label:'Avg. urgency score'},
+    {bg:portfolioNpv>=0?'var(--success-soft)':'var(--danger-soft)',c:portfolioNpv>=0?'var(--success)':'var(--danger)',ic:'<path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',val:fmt(portfolioNpv),label:'Portfolio NPV of replacements'},
+    {bg:'var(--warning-soft)',c:'var(--warning)',ic:'<path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>',val:avgRisk+'/100',label:'Avg. risk score'},
+    {bg:'var(--accent-soft)',c:'var(--accent)',ic:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8"/>',val:totalBudgetImpact.toFixed(1)+'%',label:'Budget consumed by replacements'},
+  ];
+  el.innerHTML=cards.map(c=>`<div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:${c.bg};color:${c.c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.ic}</svg></div></div><div class="stat-value">${c.val}</div><div class="stat-label">${c.label}</div></div>`).join('');
+
+  const top5=[...scored].sort((x,y)=>y.fin.priority-x.fin.priority).slice(0,5);
+  document.getElementById('ai-priority-list').innerHTML=top5.map(({a,r,fin})=>`<div class="activity-item"><div class="act-icon" style="background:${r.color==='var(--danger)'?'var(--danger-soft)':r.color==='var(--warning)'?'var(--warning-soft)':r.color==='var(--info)'?'var(--info-soft)':'var(--success-soft)'};color:${r.color}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg></div><div><div class="act-text"><b>${a.name}</b> — <span style="color:${r.color};font-weight:600">${r.rec}</span></div><div class="act-meta">Priority score ${fin.priority}/100 · Urgency ${r.urgency}/100 · ${a.category}</div></div></div>`).join('');
+
+  document.getElementById('aiTableBody').innerHTML=scored.sort((x,y)=>y.fin.priority-x.fin.priority).map(({a,r,fin})=>{
+    const cbg=r.color==='var(--danger)'?'var(--danger-soft)':r.color==='var(--warning)'?'var(--warning-soft)':r.color==='var(--info)'?'var(--info-soft)':'var(--success-soft)';
+    const npvColor=fin.npv>=0?'var(--success)':'var(--danger)';
+    const riskColor=fin.risk>=65?'var(--danger)':fin.risk>=40?'var(--warning)':'var(--success)';
+    const prColor=fin.priority>=65?'var(--danger)':fin.priority>=40?'var(--warning)':'var(--success)';
+    const budgColor=fin.budget>=25?'var(--danger)':fin.budget>=10?'var(--warning)':'var(--success)';
+    return`<tr><td><div class="name-cell"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${catIcon[a.category]||catIcon.Other}</svg></div><div><div class="prim">${a.name}</div><div class="name-sub">${a.id}</div></div></div></td><td>${a.category}</td><td style="font-weight:600;color:${r.urgency>=70?'var(--danger)':r.urgency>=45?'var(--warning)':'var(--success)'}">${r.urgency}/100</td><td><span style="font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:${cbg};color:${r.color}">${r.rec}</span></td><td style="font-weight:600;color:${npvColor}">${fmt(fin.npv)}</td><td>${fmtIrr(a)}</td><td>${fmtPayback(a)}</td><td style="font-weight:600;color:${riskColor}">${fin.risk}/100</td><td style="font-weight:600;color:${prColor}">${fin.priority}/100</td><td style="font-weight:600;color:${budgColor}">${fin.budget.toFixed(1)}%</td><td style="max-width:260px;font-size:12.5px">${r.why}</td></tr>`;
+  }).join('');
+  const saved=load('aiResult');
+  const narrEl=document.getElementById('ai-narrative');
+  if(saved&&saved.text&&narrEl.querySelector('.empty-note')){
+    narrEl.innerHTML=`<p>${saved.text.replace(/\n+/g,'</p><p>')}</p><p style="color:var(--text-tertiary);font-size:12px;margin-top:8px">Generated by Claude · ${timeAgo(saved.time)}</p>`;
+  }
+}
+function onFinSettingsChange(){
+  const d=parseFloat(document.getElementById('fin_discount').value);
+  const b=parseFloat(document.getElementById('fin_budget').value);
+  finSettings={discountRate:isNaN(d)?finSettings.discountRate:d, budget:isNaN(b)||b<=0?finSettings.budget:b};
+  saveSettings(finSettings);
+  renderAI();
+}
+function runAIEngine(){ renderAI(); showToast('AI scores recalculated'); }
+
+function buildAIDigest(){
+  const scored=assets.map(a=>{const r=aiRecommend(a);return{name:a.name,category:a.category,status:a.status,urgency:r.urgency,recommendation:r.rec,remainingLifeYears:Number(remainingUsefulLife(a).toFixed(1)),equivalentAnnualCost:Math.round(equivalentAnnualCost(a)),repairPct:repairPct(a),npv:Math.round(npv(a)),irrPct:irr(a)===null?null:Number((irr(a)*100).toFixed(1)),paybackYears:paybackPeriod(a)===null?null:Number(paybackPeriod(a).toFixed(1)),riskScore:riskScore(a),priorityScore:priorityScore(a),budgetImpactPct:Number(budgetImpact(a).toFixed(1))};});
+  return scored.sort((x,y)=>y.priorityScore-x.priorityScore);
+}
+function localAINarrative(digest){
+  if(!digest.length)return'<p class="empty-note">No assets to summarize yet.</p>';
+  const replace=digest.filter(d=>d.recommendation==='Replace');
+  const repair=digest.filter(d=>d.recommendation==='Repair & monitor');
+  const totalEac=digest.reduce((s,d)=>s+d.equivalentAnnualCost,0);
+  let html=`<p style="margin-bottom:10px">Across <b>${digest.length}</b> assets, the whole-life cost model estimates a combined equivalent annual cost of <b>${fmt(totalEac)}</b>.</p>`;
+  if(replace.length)html+=`<p style="margin-bottom:10px"><b>${replace.length}</b> asset${replace.length!==1?'s':''} — including <b>${replace.slice(0,3).map(d=>d.name).join(', ')}</b> — ${replace.length!==1?'are':'is'} flagged for replacement, with repair costs and life consumed both pushing past the risk threshold. Budgeting for replacement now avoids escalating repair spend and unplanned downtime.</p>`;
+  if(repair.length)html+=`<p style="margin-bottom:10px"><b>${repair.length}</b> asset${repair.length!==1?'s':''} should be repaired and monitored closely over the next 6–12 months, as urgency scores are elevated but not yet critical.</p>`;
+  html+=`<p style="color:var(--text-tertiary);font-size:12px">Generated locally from whole-life cost formulas (no AI call).</p>`;
+  return html;
+}
+async function generateAINarrative(){
+  const digest=buildAIDigest();
+  const btn=document.getElementById('aiGenBtn');
+  const narrEl=document.getElementById('ai-narrative');
+  btn.disabled=true; const oldTxt=btn.innerHTML; btn.innerHTML='Generating…';
+  narrEl.innerHTML='<p class="empty-note">Thinking…</p>';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        messages:[{role:'user',content:`You are a fleet/asset procurement advisor. Given this JSON array of scored assets (urgency/riskScore/priorityScore are 0-100, higher = more urgent/risky/important; npv in currency; irrPct and budgetImpactPct as percentages; paybackYears in years), write a concise 3-4 sentence plain-English executive summary for a procurement lead, highlighting the top priority replacements, their financial justification (NPV/IRR/payback), any that are high-risk or high budget-impact, and the overall budget implication. No markdown headers, no bullet lists, just prose.\n\n${JSON.stringify(digest)}`}]
+      })
+    });
+    if(!resp.ok)throw new Error('API error '+resp.status);
+    const data=await resp.json();
+    const text=(data.content||[]).map(c=>c.text||'').join('\n').trim();
+    if(!text)throw new Error('Empty response');
+    narrEl.innerHTML=`<p>${text.replace(/\n+/g,'</p><p>')}</p><p style="color:var(--text-tertiary);font-size:12px;margin-top:8px">Generated by Claude.</p>`;
+    save('aiResult',{text,time:new Date().toISOString()});
+    pushLog('report',`AI narrative generated for <b>${digest.length}</b> assets`);
+    showToast('AI narrative generated');
+  }catch(err){
+    narrEl.innerHTML=localAINarrative(digest);
+    showToast('AI call unavailable — showing local summary',true);
+  }finally{
+    btn.disabled=false; btn.innerHTML=oldTxt;
+  }
+}
+
+
+
+/* ===== NAV ===== */
+let currentPage='dashboard';
+function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+  currentPage=page;
+  renderPage(page);
+  closeMobileNav();
+  window.scrollTo(0,0);
+}
+function renderPage(p){
+  if(p==='dashboard')renderDashboard();
+  else if(p==='assets')renderAssetTable();
+  else if(p==='people')renderPeopleTable();
+  else if(p==='vendors')renderVendorTable();
+  else if(MODULE_KEYS.includes(p))renderModuleTable(p);
+  else if(p==='ai')renderAI();
+  else if(p==='reports')renderReports();
+  else if(p==='audits')renderAudits();
+}
+function openMobileNav(){ document.getElementById('sidebar').classList.add('mobile-open'); document.getElementById('sidebarBackdrop').classList.add('show'); }
+function closeMobileNav(){ document.getElementById('sidebar').classList.remove('mobile-open'); document.getElementById('sidebarBackdrop').classList.remove('show'); }
+
+/* ===== DASHBOARD ===== */
+function renderDashboard(){
+  const d=new Date();
+  document.getElementById('dateLine').textContent=d.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})+' · Fleet & equipment overview';
+  renderDashStats(); renderDashActivity(); renderDonut(); renderThresholds(); renderCatBars();
+}
+function renderDashStats(){
+  const total=assets.length;
+  const totalVal=assets.reduce((s,a)=>s+(a.price||0),0);
+  const flagged=assets.filter(a=>repairPct(a)>50).length;
+  const active=assets.filter(a=>a.status==='active').length;
+  const pct=total?Math.round((active/total)*100):0;
+  const eacTotal=assets.reduce((s,a)=>s+equivalentAnnualCost(a),0);
+  const cards=[
+    {bg:'var(--accent-soft)',c:'var(--accent)',ic:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',val:total,label:'Total assets'},
+    {bg:'var(--success-soft)',c:'var(--success)',ic:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',val:fmt(totalVal),label:'Total fleet value'},
+    {bg:'var(--warning-soft)',c:'var(--warning)',ic:'<path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>',val:flagged,label:'Flagged for replacement'},
+    {bg:'var(--info-soft)',c:'var(--info)',ic:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',val:pct+'%',label:'Assets active'},
+    {bg:'var(--danger-soft)',c:'var(--danger)',ic:'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',val:fmt(eacTotal),label:'Whole-life cost / yr'},
+  ];
+  document.getElementById('dash-stats').innerHTML=cards.map(c=>`<div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:${c.bg};color:${c.c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.ic}</svg></div></div><div class="stat-value">${c.val}</div><div class="stat-label">${c.label}</div></div>`).join('');
+}
+function renderDashActivity(){
+  const log=loadLog();
+  const el=document.getElementById('dash-activity');
+  if(!log.length){el.innerHTML='<p class="empty-note">No activity yet. Changes will appear here.</p>';return;}
+  const tc={created:'tag-info',updated:'tag-warning',deleted:'tag-danger',status:'tag-success',people:'tag-info',vendor:'tag-info',report:'tag-info'};
+  el.innerHTML=log.slice(0,6).map(item=>`<div class="activity-item"><div class="act-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg></div><div><div class="act-text"><span class="tag ${tc[item.type]||'tag-info'}">${item.type}</span>${item.text}</div><div class="act-meta">${timeAgo(item.time)}</div></div></div>`).join('');
+}
+function renderDonut(){
+  const statuses=['active','repair','storage','out'];
+  const colors={active:'var(--success)',repair:'var(--warning)',storage:'var(--info)',out:'var(--danger)'};
+  const labels={active:'Active',repair:'In repair',storage:'In storage',out:'Out for repair'};
+  const total=assets.length||1;
+  const counts={};statuses.forEach(s=>counts[s]=assets.filter(a=>a.status===s).length);
+  const r=58,C=2*Math.PI*r; let off=0;
+  let circles=`<circle cx="70" cy="70" r="${r}" fill="none" stroke="var(--bg-hover)" stroke-width="16"/>`;
+  statuses.forEach(s=>{const f=counts[s]/total;if(f>0){const len=f*C;circles+=`<circle cx="70" cy="70" r="${r}" fill="none" stroke="${colors[s]}" stroke-width="16" stroke-dasharray="${len} ${C}" stroke-dashoffset="${-off}" stroke-linecap="round" style="transform:rotate(-90deg);transform-origin:70px 70px;"/>`;off+=len;}});
+  circles+=`<text x="70" y="65" text-anchor="middle" fill="var(--text-primary)" font-family="Space Grotesk" font-size="26" font-weight="700">${assets.length}</text><text x="70" y="83" text-anchor="middle" fill="var(--text-tertiary)" font-family="Inter" font-size="9.5">TOTAL ASSETS</text>`;
+  document.getElementById('donutSvg').innerHTML=circles;
+  document.getElementById('donutLegend').innerHTML=statuses.map(s=>{const pct=total?Math.round((counts[s]/total)*100):0;return`<div class="legend-row"><div class="legend-left"><span class="legend-dot" style="background:${colors[s]}"></span>${labels[s]}</div><span style="font-weight:600">${pct}%</span></div>`;}).join('');
+}
+function renderThresholds(){
+  const el=document.getElementById('dash-thresholds');
+  if(!assets.length){el.innerHTML='<p class="empty-note">Add assets to see thresholds.</p>';return;}
+  const sorted=[...assets].sort((a,b)=>repairPct(b)-repairPct(a)).slice(0,5);
+  el.innerHTML=sorted.map(a=>{const p=repairPct(a);const c=p>50?'var(--danger)':p>30?'var(--warning)':'var(--success)';return`<div class="bar-row"><div class="bar-top"><span class="bar-label">${a.name}</span><span class="bar-val" style="color:${c}">${p}%</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(p,100)}%;background:${c}"></div></div></div>`;}).join('');
+}
+function renderCatBars(){
+  const el=document.getElementById('dash-catbars');
+  if(!assets.length){el.innerHTML='<p class="empty-note">Add assets to see category values.</p>';return;}
+  const byCat={};assets.forEach(a=>{byCat[a.category]=(byCat[a.category]||0)+(a.price||0);});
+  const maxVal=Math.max(...Object.values(byCat));
+  const colors=['var(--accent)','var(--info)','var(--success)','var(--warning)','var(--danger)','#9B7DE0'];
+  el.innerHTML=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,val],i)=>`<div class="bar-row"><div class="bar-top"><span class="bar-label">${cat}</span><span class="bar-val">${fmt(val)}</span></div><div class="bar-track"><div class="bar-fill" style="width:${(val/maxVal)*100}%;background:${colors[i%colors.length]}"></div></div></div>`).join('');
+}
+
+/* ===== ASSET TABLE ===== */
+const catIcon={Vehicle:'<path d="M19 17h2v-3l-2-5h-3"/><path d="M14 17H4V6a1 1 0 011-1h8a1 1 0 011 1v11z"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',Power:'<rect x="2" y="7" width="20" height="10" rx="1"/><path d="M6 17v3M18 17v3M2 10h20"/>',Construction:'<path d="M3 13h13l4 5H3z"/><path d="M7 13V6a2 2 0 012-2h4a2 2 0 012 2v7"/>',Warehouse:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9"/>','IT equipment':'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',Other:'<circle cx="12" cy="12" r="9"/>'};
+function renderAssetTable(){
+  const q=(document.getElementById('assetSearch').value||'').toLowerCase();
+  const f=assets.filter(a=>a.name.toLowerCase().includes(q)||a.category.toLowerCase().includes(q)||a.id.toLowerCase().includes(q));
+  const body=document.getElementById('assetTableBody');
+  const empty=document.getElementById('assetEmpty');
+  if(!f.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  body.innerHTML=f.map(a=>{
+    const p=repairPct(a);const pc=p>50?'var(--danger)':p>30?'var(--warning)':'var(--success)';
+    return`<tr><td><div class="name-cell"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${catIcon[a.category]||catIcon.Other}</svg></div><div><div class="prim">${a.name}</div><div class="name-sub">${a.id}</div></div></div></td><td>${a.category}</td><td class="prim">${fmt(a.price)}</td><td>${fmt(a.repairs)}</td><td style="color:${pc};font-weight:600">${p}%</td><td>${fmt(bookValue(a))}</td><td>${fmt(equivalentAnnualCost(a))}</td><td><select class="status-select pill ${pillClass(a.status)}" onchange="changeAssetStatus('${a.id}',this.value)"><option value="active" ${a.status==='active'?'selected':''}>Active</option><option value="repair" ${a.status==='repair'?'selected':''}>In repair</option><option value="storage" ${a.status==='storage'?'selected':''}>In storage</option><option value="out" ${a.status==='out'?'selected':''}>Out for repair</option></select></td><td>${a.assigned||'Unassigned'}</td><td><div class="row-actions"><button class="rib" onclick="editAsset('${a.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button><button class="rib del" onclick="deleteAsset('${a.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg></button></div></td></tr>`;
+  }).join('');
+}
+function openAssetModal(){ document.getElementById('assetModalTitle').textContent='Add new asset'; document.getElementById('a_id').value=''; ['a_name','a_price','a_rep','a_repairs','a_assigned','a_pdate','a_salvage','a_opcost'].forEach(i=>document.getElementById(i).value=''); document.getElementById('a_cat').value='Vehicle'; document.getElementById('a_status').value='active'; document.getElementById('a_life').value='5'; document.getElementById('assetModal').classList.add('open'); setTimeout(()=>document.getElementById('a_name').focus(),50); }
+function editAsset(id){ const a=assets.find(x=>x.id===id); if(!a)return; document.getElementById('assetModalTitle').textContent='Edit asset'; document.getElementById('a_id').value=a.id; document.getElementById('a_name').value=a.name; document.getElementById('a_cat').value=a.category; document.getElementById('a_status').value=a.status; document.getElementById('a_price').value=a.price; document.getElementById('a_rep').value=a.replacement; document.getElementById('a_repairs').value=a.repairs; document.getElementById('a_assigned').value=a.assigned; document.getElementById('a_pdate').value=a.purchaseDate||''; document.getElementById('a_life').value=a.usefulLife||5; document.getElementById('a_salvage').value=a.salvage||0; document.getElementById('a_opcost').value=a.opCost||0; document.getElementById('assetModal').classList.add('open'); }
+function saveAsset(){
+  const id=document.getElementById('a_id').value;
+  const name=document.getElementById('a_name').value.trim();
+  const price=parseFloat(document.getElementById('a_price').value)||0;
+  if(!name||!price){showToast('Fill in asset name and purchase price.',true);return;}
+  const d={name,category:document.getElementById('a_cat').value,status:document.getElementById('a_status').value,price,replacement:parseFloat(document.getElementById('a_rep').value)||price*1.1,repairs:parseFloat(document.getElementById('a_repairs').value)||0,assigned:document.getElementById('a_assigned').value.trim()||'Unassigned',purchaseDate:document.getElementById('a_pdate').value||'',usefulLife:parseFloat(document.getElementById('a_life').value)||5,salvage:parseFloat(document.getElementById('a_salvage').value)||0,opCost:parseFloat(document.getElementById('a_opcost').value)||0};
+  if(id){ const i=assets.findIndex(a=>a.id===id); if(i>-1)assets[i]={...assets[i],...d}; pushLog('updated',`<b>${name}</b> details updated`); showToast('Asset updated'); }
+  else{ assets.unshift({id:genId('AST-',assets),...d}); pushLog('created',`<b>${name}</b> added to register`); showToast('Asset added'); }
+  save('assets',assets); closeModal('assetModal'); renderAll();
+}
+function changeAssetStatus(id,s){ const a=assets.find(x=>x.id===id); if(!a)return; a.status=s; save('assets',assets); pushLog('status',`<b>${a.name}</b> status → ${statusLabel(s)}`); renderAssetTable(); if(currentPage==='dashboard')renderDashboard(); }
+function deleteAsset(id){ const a=assets.find(x=>x.id===id); if(!a)return; if(!confirm(`Delete "${a.name}"?`))return; assets=assets.filter(x=>x.id!==id); save('assets',assets); pushLog('deleted',`<b>${a.name}</b> removed`); showToast('Asset deleted'); renderAll(); }
+function exportCSV(){
+  const h=['ID','Name','Category','Purchase price','Replacement cost','Repairs to date','Repair %','Book value','Equivalent annual cost','Total cost of ownership','Remaining useful life (yrs)','Replacement urgency score','Status','Assigned'];
+  const rows=assets.map(a=>[a.id,a.name,a.category,a.price,a.replacement,a.repairs,repairPct(a),Math.round(bookValue(a)),Math.round(equivalentAnnualCost(a)),Math.round(totalCostOfOwnership(a)),remainingUsefulLife(a).toFixed(1),replacementUrgencyScore(a),statusLabel(a.status),a.assigned]);
+  const csv=[h,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const b=new Blob([csv],{type:'text/csv'});const u=URL.createObjectURL(b);const l=document.createElement('a');l.href=u;l.download='assetiq-assets.csv';l.click();URL.revokeObjectURL(u);
+}
+function parseCSVText(text){
+  const rows=[];let row=[];let field='';let inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQuotes){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else{inQuotes=false;} }
+      else field+=c;
+    } else {
+      if(c==='"') inQuotes=true;
+      else if(c===','){ row.push(field); field=''; }
+      else if(c==='\r'){ /* skip */ }
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else field+=c;
+    }
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>r.length && !(r.length===1 && r[0].trim()===''));
+}
+function normalizeHeader(h){ return h.trim().toLowerCase().replace(/[^a-z0-9]/g,''); }
+const CSV_FIELD_ALIASES={
+  name:['name','assetname','item','itemname'],
+  category:['category','type','assetcategory'],
+  price:['purchaseprice','price','cost','purchasecost'],
+  replacement:['replacementcost','replacement','replacementvalue'],
+  repairs:['repairstodate','repairs','repaircost','totalrepairs'],
+  assigned:['assigned','assignedto','owner','custodian'],
+  purchaseDate:['purchasedate','datepurchased','acquireddate'],
+  usefulLife:['usefullife','remainingusefullifeyrs','usefullifeyrs','lifeyears'],
+  salvage:['salvage','salvagevalue','residualvalue'],
+  opCost:['opcost','operatingcost','annualopcost'],
+  status:['status']
+};
+function mapHeaderRow(headerRow){
+  const norm=headerRow.map(normalizeHeader);
+  const map={};
+  Object.keys(CSV_FIELD_ALIASES).forEach(key=>{
+    const aliases=CSV_FIELD_ALIASES[key];
+    const idx=norm.findIndex(h=>aliases.includes(h));
+    if(idx>-1) map[key]=idx;
+  });
+  return map;
+}
+function handleCSVImport(evt){
+  const file=evt.target.files&&evt.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const rows=parseCSVText(String(e.target.result||''));
+      if(rows.length<2){ showToast('CSV file has no data rows.',true); evt.target.value=''; return; }
+      const map=mapHeaderRow(rows[0]);
+      if(map.name===undefined || map.price===undefined){ showToast('CSV needs at least Name and Purchase price columns.',true); evt.target.value=''; return; }
+      const validStatuses=['active','repair','storage','out'];
+      let added=0, skipped=0;
+      for(let i=1;i<rows.length;i++){
+        const r=rows[i];
+        if(!r || !r.length || r.every(c=>String(c).trim()==='')) continue;
+        const get=(key)=> map[key]!==undefined ? String(r[map[key]]||'').trim() : '';
+        const name=get('name');
+        const price=parseFloat((get('price')||'').replace(/[^0-9.\-]/g,''))||0;
+        if(!name||!price){ skipped++; continue; }
+        let status=get('status').toLowerCase();
+        if(!validStatuses.includes(status)) status='active';
+        const d={
+          name,
+          category:get('category')||'Other',
+          status,
+          price,
+          replacement:parseFloat((get('replacement')||'').replace(/[^0-9.\-]/g,''))||price*1.1,
+          repairs:parseFloat((get('repairs')||'').replace(/[^0-9.\-]/g,''))||0,
+          assigned:get('assigned')||'Unassigned',
+          purchaseDate:get('purchaseDate')||'',
+          usefulLife:parseFloat(get('usefulLife'))||5,
+          salvage:parseFloat((get('salvage')||'').replace(/[^0-9.\-]/g,''))||0,
+          opCost:parseFloat((get('opCost')||'').replace(/[^0-9.\-]/g,''))||0
+        };
+        assets.unshift({id:genId('AST-',assets),...d});
+        added++;
+      }
+      if(added){ save('assets',assets); pushLog('created',`<b>${added} asset${added!==1?'s':''}</b> imported from CSV`); renderAll(); }
+      showToast(added?`Imported ${added} asset${added!==1?'s':''}${skipped?`, skipped ${skipped}`:''}.`:'No valid rows found to import.', !added);
+    }catch(err){
+      showToast('Could not read that CSV file.',true);
+    }
+    evt.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+/* ===== PEOPLE TABLE ===== */
+function renderPeopleTable(){
+  const q=(document.getElementById('peopleSearch').value||'').toLowerCase();
+  const f=people.filter(p=>(p.fname+' '+p.lname).toLowerCase().includes(q)||p.role.toLowerCase().includes(q)||p.dept.toLowerCase().includes(q));
+  const body=document.getElementById('peopleTableBody');const empty=document.getElementById('peopleEmpty');
+  if(!f.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  body.innerHTML=f.map(p=>{
+    const assigned=assets.filter(a=>a.assigned&&a.assigned.toLowerCase().includes(p.fname.toLowerCase())).length;
+    const initials=(p.fname[0]+(p.lname[0]||'')).toUpperCase();
+    return`<tr><td><div class="name-cell"><div class="thumb" style="border-radius:50%;background:linear-gradient(135deg,#5B9EE8,#3D6FB0)"><span style="font-size:11px;font-weight:700;color:#fff">${initials}</span></div><div><div class="prim">${p.fname} ${p.lname}</div><div class="name-sub">${p.id}</div></div></div></td><td>${p.role||'—'}<span style="font-size:11px;color:var(--text-tertiary);display:block">${p.dept||''}</span></td><td>${p.email||'—'}</td><td>${p.phone||'—'}</td><td>${assigned} asset${assigned!==1?'s':''}</td><td><span class="pill ${pillClass(p.status)}">${statusLabel(p.status)}</span></td><td><div class="row-actions"><button class="rib" onclick="editPerson('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button><button class="rib del" onclick="deletePerson('${p.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg></button></div></td></tr>`;
+  }).join('');
+}
+function openPeopleModal(){ document.getElementById('peopleModalTitle').textContent='Add person'; document.getElementById('p_id').value=''; ['p_fname','p_lname','p_role','p_dept','p_email','p_phone'].forEach(i=>document.getElementById(i).value=''); document.getElementById('p_status').value='active2'; document.getElementById('peopleModal').classList.add('open'); setTimeout(()=>document.getElementById('p_fname').focus(),50); }
+function editPerson(id){ const p=people.find(x=>x.id===id); if(!p)return; document.getElementById('peopleModalTitle').textContent='Edit person'; ['id','fname','lname','role','dept','email','phone','status'].forEach(f=>{ const el=document.getElementById('p_'+f); if(el)el.value=p[f]||''; }); document.getElementById('peopleModal').classList.add('open'); }
+function savePerson(){
+  const id=document.getElementById('p_id').value;
+  const fname=document.getElementById('p_fname').value.trim();const lname=document.getElementById('p_lname').value.trim();
+  if(!fname||!lname){showToast('Enter first and last name.',true);return;}
+  const d={fname,lname,role:document.getElementById('p_role').value.trim(),dept:document.getElementById('p_dept').value.trim(),email:document.getElementById('p_email').value.trim(),phone:document.getElementById('p_phone').value.trim(),status:document.getElementById('p_status').value};
+  if(id){ const i=people.findIndex(x=>x.id===id); if(i>-1)people[i]={...people[i],...d}; pushLog('people',`<b>${fname} ${lname}</b> details updated`); showToast('Person updated'); }
+  else{ people.unshift({id:genId('P-',people),...d}); pushLog('people',`<b>${fname} ${lname}</b> added to people`); showToast('Person added'); }
+  save('people',people); closeModal('peopleModal'); renderAll();
+}
+function deletePerson(id){ const p=people.find(x=>x.id===id); if(!p)return; if(!confirm(`Delete "${p.fname} ${p.lname}"?`))return; people=people.filter(x=>x.id!==id); save('people',people); pushLog('deleted',`<b>${p.fname} ${p.lname}</b> removed`); showToast('Person deleted'); renderAll(); }
+
+/* ===== VENDOR TABLE ===== */
+function renderVendorTable(){
+  const q=(document.getElementById('vendorSearch').value||'').toLowerCase();
+  const f=vendors.filter(v=>v.name.toLowerCase().includes(q)||v.category.toLowerCase().includes(q)||(v.contact||'').toLowerCase().includes(q));
+  const body=document.getElementById('vendorTableBody');const empty=document.getElementById('vendorEmpty');
+  if(!f.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  body.innerHTML=f.map(v=>`<tr><td><div class="name-cell"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 22V12h6v10"/></svg></div><div><div class="prim">${v.name}</div><div class="name-sub">${v.id}</div></div></div></td><td>${v.category}</td><td>${v.contact||'—'}</td><td>${v.phone||'—'}<span style="display:block;font-size:11px;color:var(--text-tertiary)">${v.email||''}</span></td><td><span class="stars" style="color:var(--accent)">${stars(v.rating||3)}</span></td><td><span class="pill ${pillClass(v.status)}">${statusLabel(v.status)}</span></td><td><div class="row-actions"><button class="rib" onclick="editVendor('${v.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button><button class="rib del" onclick="deleteVendor('${v.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg></button></div></td></tr>`).join('');
+}
+function openVendorModal(){ document.getElementById('vendorModalTitle').textContent='Add vendor'; document.getElementById('v_id').value=''; ['v_name','v_contact','v_phone','v_email','v_notes'].forEach(i=>document.getElementById(i).value=''); document.getElementById('v_cat').value='Vehicle maintenance'; document.getElementById('v_rating').value='4'; document.getElementById('v_status').value='active'; document.getElementById('vendorModal').classList.add('open'); setTimeout(()=>document.getElementById('v_name').focus(),50); }
+function editVendor(id){ const v=vendors.find(x=>x.id===id); if(!v)return; document.getElementById('vendorModalTitle').textContent='Edit vendor'; document.getElementById('v_id').value=v.id; document.getElementById('v_name').value=v.name; document.getElementById('v_cat').value=v.category; document.getElementById('v_contact').value=v.contact||''; document.getElementById('v_phone').value=v.phone||''; document.getElementById('v_email').value=v.email||''; document.getElementById('v_rating').value=v.rating||4; document.getElementById('v_status').value=v.status; document.getElementById('v_notes').value=v.notes||''; document.getElementById('vendorModal').classList.add('open'); }
+function saveVendor(){
+  const id=document.getElementById('v_id').value;const name=document.getElementById('v_name').value.trim();
+  if(!name){showToast('Enter vendor name.',true);return;}
+  const d={name,category:document.getElementById('v_cat').value,contact:document.getElementById('v_contact').value.trim(),phone:document.getElementById('v_phone').value.trim(),email:document.getElementById('v_email').value.trim(),rating:parseInt(document.getElementById('v_rating').value)||4,status:document.getElementById('v_status').value,notes:document.getElementById('v_notes').value.trim()};
+  if(id){ const i=vendors.findIndex(x=>x.id===id); if(i>-1)vendors[i]={...vendors[i],...d}; pushLog('vendor',`<b>${name}</b> vendor updated`); showToast('Vendor updated'); }
+  else{ vendors.unshift({id:genId('V-',vendors),...d}); pushLog('vendor',`<b>${name}</b> added as vendor`); showToast('Vendor added'); }
+  save('vendors',vendors); closeModal('vendorModal'); renderAll();
+}
+function deleteVendor(id){ const v=vendors.find(x=>x.id===id); if(!v)return; if(!confirm(`Delete "${v.name}"?`))return; vendors=vendors.filter(x=>x.id!==id); save('vendors',vendors); pushLog('deleted',`<b>${v.name}</b> removed`); showToast('Vendor deleted'); renderAll(); }
+
+/* ===== REPORTS ===== */
+const reportColors={replace:'var(--danger)',repair:'var(--warning)',monitor:'var(--info)',procure:'var(--success)',pending:'var(--text-tertiary)','':`var(--text-tertiary)`};
+function renderReports(){
+  const el=document.getElementById('reportsList');const empty=document.getElementById('reportsEmpty');
+  if(!reports.length){el.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  el.innerHTML=reports.map(r=>{
+    const dc=reportColors[r.decision||'']||'var(--text-tertiary)';
+    const dbg=r.decision==='replace'?'var(--danger-soft)':r.decision==='repair'?'var(--warning-soft)':r.decision==='monitor'?'var(--info-soft)':r.decision==='procure'?'var(--success-soft)':'var(--bg-hover)';
+    const dec=r.decision?`<span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:${dbg};color:${dc};text-transform:uppercase">${r.decision}</span>`:'';
+    const sav=r.saving?`<span style="font-size:12px;color:var(--success);font-weight:600;margin-left:8px">+${fmt(r.saving)} saved</span>`:'';
+    return`<div class="report-card"><div class="report-left"><div class="report-icon" style="background:var(--accent-soft);color:var(--accent)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div><div><div style="font-weight:600;font-size:13.5px">${r.title}</div><div style="font-size:12px;color:var(--text-tertiary);margin-top:2px">${r.type} · ${r.asset||'General'} · ${new Date(r.time).toLocaleDateString()}</div><div style="font-size:12.5px;color:var(--text-secondary);margin-top:5px">${r.summary}</div><div style="margin-top:6px">${dec}${sav}</div></div></div><div class="report-actions"><button class="rib" onclick="editReport('${r.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg></button><button class="rib del" onclick="deleteReport('${r.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg></button></div></div>`;
+  }).join('');
+}
+function openReportModal(){ document.getElementById('reportModalTitle').textContent='New report'; document.getElementById('r_id').value=''; ['r_title','r_asset','r_saving','r_summary'].forEach(i=>document.getElementById(i).value=''); document.getElementById('r_type').value='Repair vs Replace'; document.getElementById('r_decision').value=''; document.getElementById('reportModal').classList.add('open'); setTimeout(()=>document.getElementById('r_title').focus(),50); }
+function editReport(id){ const r=reports.find(x=>x.id===id); if(!r)return; document.getElementById('reportModalTitle').textContent='Edit report'; document.getElementById('r_id').value=r.id; document.getElementById('r_title').value=r.title; document.getElementById('r_type').value=r.type; document.getElementById('r_decision').value=r.decision||''; document.getElementById('r_asset').value=r.asset||''; document.getElementById('r_saving').value=r.saving||''; document.getElementById('r_summary').value=r.summary||''; document.getElementById('reportModal').classList.add('open'); }
+function saveReport(){
+  const id=document.getElementById('r_id').value;const title=document.getElementById('r_title').value.trim();const summary=document.getElementById('r_summary').value.trim();
+  if(!title||!summary){showToast('Enter report title and summary.',true);return;}
+  const d={title,type:document.getElementById('r_type').value,decision:document.getElementById('r_decision').value,asset:document.getElementById('r_asset').value.trim(),saving:parseFloat(document.getElementById('r_saving').value)||0,summary,time:new Date().toISOString()};
+  if(id){ const i=reports.findIndex(x=>x.id===id); if(i>-1)reports[i]={...reports[i],...d}; pushLog('report',`<b>${title}</b> report updated`); showToast('Report updated'); }
+  else{ reports.unshift({id:genId('RPT-',reports),...d}); pushLog('report',`<b>${title}</b> report created`); showToast('Report saved'); }
+  save('reports',reports); closeModal('reportModal'); renderReports();
+}
+function deleteReport(id){ const r=reports.find(x=>x.id===id); if(!r)return; if(!confirm(`Delete "${r.title}"?`))return; reports=reports.filter(x=>x.id!==id); save('reports',reports); pushLog('deleted',`Report <b>${r.title}</b> deleted`); showToast('Report deleted'); renderReports(); }
+
+/* ===== AUDITS ===== */
+function renderAudits(){
+  const log=loadLog();const body=document.getElementById('auditTableBody');const empty=document.getElementById('auditEmpty');
+  if(!log.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const tc={created:'tag-info',updated:'tag-warning',deleted:'tag-danger',status:'tag-success',people:'tag-info',vendor:'tag-info',report:'tag-info'};
+  body.innerHTML=log.map(item=>`<tr><td style="white-space:nowrap">${new Date(item.time).toLocaleString()}</td><td><span class="tag ${tc[item.type]||'tag-info'}">${item.type}</span></td><td>${item.text}</td></tr>`).join('');
+}
+
+/* ===== MODAL ===== */
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o)o.classList.remove('open'); }));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(o=>o.classList.remove('open')); });
+
+/* ===== TOAST ===== */
+let tt;
+function showToast(msg,err){
+  const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;
+  t.style.borderColor=err?'var(--danger)':'var(--border)';t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ===== BADGES ===== */
+function updateBadges(){
+  document.getElementById('nb-assets').textContent=assets.length;
+  document.getElementById('nb-people').textContent=people.length;
+  document.getElementById('nb-vendors').textContent=vendors.length;
+  document.getElementById('nb-reports').textContent=reports.length;
+  document.getElementById('nb-ai').textContent=assets.filter(a=>aiRecommend(a).rec==='Replace').length;
+  MODULE_KEYS.forEach(k=>{ const el=document.getElementById('nb-'+k); if(el)el.textContent=(moduleData[k]||[]).length; });
+}
+
+/* ===== RENDER ALL ===== */
+function renderAll(){ updateBadges(); renderPage(currentPage); }
+
+/* ===== USER PROFILE / SIGN-IN =====
+   Local, device-level profile — no password or server auth. Lets whoever
+   is using this device set their own name and position, and keeps the
+   AI Insights Hub page in sync via the same localStorage key. */
+const DEFAULT_USER={name:'John Smith',role:'Procurement Lead'};
+function initials(name){
+  const parts=(name||'').trim().split(/\s+/).filter(Boolean);
+  if(!parts.length)return'?';
+  return (parts[0][0]+(parts[1]?parts[1][0]:'')).toUpperCase();
+}
+function loadUser(){ return load('user'); }
+function saveUser(u){ save('user',u); pushLog('updated',`Profile set to <b>${esc(u.name)}</b> (${esc(u.role||'—')})`); }
+function renderUserCard(){
+  const u=loadUser()||DEFAULT_USER;
+  document.getElementById('userNameDisplay').textContent=u.name||'Unnamed user';
+  document.getElementById('userRoleDisplay').textContent=u.role||'—';
+  document.getElementById('userAvatar').textContent=initials(u.name);
+}
+function openProfileModal(){
+  const u=loadUser()||DEFAULT_USER;
+  document.getElementById('pf_name').value=u.name||'';
+  document.getElementById('pf_role').value=u.role||'';
+  document.getElementById('profileModal').classList.add('open');
+  setTimeout(()=>document.getElementById('pf_name').focus(),50);
+}
+function saveProfile(){
+  const name=document.getElementById('pf_name').value.trim();
+  const role=document.getElementById('pf_role').value.trim();
+  if(!name){ showToast('Enter a name.',true); return; }
+  saveUser({name,role});
+  renderUserCard(); closeModal('profileModal'); showToast('Profile updated');
+}
+function completeSignIn(){
+  const name=document.getElementById('si_name').value.trim();
+  const role=document.getElementById('si_role').value.trim();
+  if(!name){ showToast('Enter your name to continue.',true); document.getElementById('si_name').focus(); return; }
+  saveUser({name,role});
+  document.getElementById('signInOverlay').classList.remove('open');
+  renderUserCard(); showToast(`Welcome, ${name}`);
+}
+function signOut(){
+  if(!confirm('Sign out? You (or the next person) will be asked to sign in again on this device.'))return;
+  localStorage.removeItem(SK.user);
+  document.getElementById('signInOverlay').classList.add('open');
+}
+function checkSignIn(){
+  if(!loadUser()){ document.getElementById('signInOverlay').classList.add('open'); }
+  renderUserCard();
+}
+
+/* ===== INIT ===== */
+loadAll();
+renderAll();
+checkSignIn();
+</script>
+</body>
+</html>

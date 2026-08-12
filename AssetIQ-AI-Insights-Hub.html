@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Insights Hub — SmartAssetIQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0D12;--bg-raised:#12161D;--bg-card:#151A22;--bg-hover:#1B212B;
+  --border:#222732;--border-soft:#1A1F28;
+  --text-primary:#EDEEF1;--text-secondary:#8B92A3;--text-tertiary:#5A6273;
+  --accent:#E8A33D;--accent-soft:#3A2E1A;--accent-dim:#B8822E;
+  --success:#3DDC84;--success-soft:#16291F;
+  --danger:#FF6B5E;--danger-soft:#2E1917;
+  --warning:#F2C94C;--warning-soft:#2E2716;
+  --info:#5B9EE8;--info-soft:#16212E;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:14px;
+  --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow-md:0 8px 24px -8px rgba(0,0,0,.55);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{overflow-x:hidden;}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(760px 460px at 12% -8%,rgba(232,163,61,.10),transparent 60%),
+  radial-gradient(640px 520px at 100% 10%,rgba(91,158,232,.07),transparent 55%);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:20px;border:2px solid var(--bg);}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:22px clamp(16px,4vw,40px) 80px;}
+
+/* TOPBAR */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:6px 0 30px;}
+.back-link{display:inline-flex;align-items:center;gap:7px;color:var(--text-secondary);font-size:13px;font-weight:600;text-decoration:none;transition:color .15s;}
+.back-link:hover{color:var(--accent);}
+.back-link svg{width:15px;height:15px;}
+.hub-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;border-radius:20px;background:var(--accent-soft);color:var(--accent);}
+.hub-badge svg{width:12px;height:12px;}
+.user-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 6px;border-radius:20px;background:var(--bg-card);border:1px solid var(--border-soft);cursor:pointer;transition:border-color .15s;}
+.user-chip:hover{border-color:var(--border);}
+.user-chip .av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#5B9EE8,#3D6FB0);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:600;font-size:10.5px;color:#fff;flex-shrink:0;}
+.user-chip .txt{font-size:12px;color:var(--text-secondary);line-height:1.3;}
+.user-chip .txt b{color:var(--text-primary);font-weight:600;}
+
+/* MODAL (profile editor) */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,6,9,.75);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);width:100%;max-width:380px;padding:24px;box-shadow:0 24px 60px -12px rgba(0,0,0,.6);}
+.modal-title{font-family:var(--font-display);font-size:17px;font-weight:700;margin-bottom:14px;}
+.ff{margin-bottom:12px;text-align:left;}
+.ff label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:5px;font-weight:500;}
+.ff input{width:100%;padding:9px 11px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:13px;font-family:var(--font-body);outline:none;}
+.ff input:focus{border-color:var(--accent);}
+
+/* HERO */
+.hero{padding:8px 0 30px;border-bottom:1px solid var(--border-soft);margin-bottom:32px;}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:14px;}
+.hero h1{font-family:var(--font-display);font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-.02em;max-width:760px;margin-bottom:14px;}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent),#F0AD4E);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p.lede{color:var(--text-secondary);font-size:15px;max-width:600px;margin-bottom:26px;}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;}
+.hstat{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+.hstat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.7;}
+.hstat .v{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px;}
+.hstat .l{font-size:12px;color:var(--text-secondary);}
+
+/* SECTIONS */
+section{margin-bottom:44px;}
+.sec-head{margin-bottom:18px;}
+.sec-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.sec-title{font-family:var(--font-display);font-size:21px;font-weight:700;letter-spacing:-.01em;}
+.sec-sub{color:var(--text-secondary);font-size:13.5px;margin-top:5px;max-width:620px;}
+.card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm);}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:stretch;justify-content:space-between;gap:0;overflow-x:auto;padding:6px 0;}
+.pl-node{flex:1;min-width:150px;position:relative;padding:0 18px;}
+.pl-node .dot{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.pl-node .dot svg{width:18px;height:18px;}
+.pl-node h4{font-family:var(--font-display);font-size:13.5px;font-weight:600;margin-bottom:6px;}
+.pl-node p{font-size:12px;color:var(--text-tertiary);line-height:1.5;}
+.pl-track{position:absolute;top:19px;left:-50%;width:100%;height:2px;background:var(--border);z-index:0;}
+.pl-node:first-child .pl-track{display:none;}
+.pl-track .runner{position:absolute;top:-2px;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:run 2.6s linear infinite;}
+@keyframes run{0%{left:-3px;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(100% - 3px);opacity:0}}
+.pl-node:nth-child(2) .runner{animation-delay:0s}
+.pl-node:nth-child(3) .runner{animation-delay:.65s}
+.pl-node:nth-child(4) .runner{animation-delay:1.3s}
+@media(prefers-reduced-motion:reduce){.runner{animation:none;left:40%;opacity:1}}
+@media(max-width:820px){.pl-track{display:none}}
+
+/* SCATTER CHART */
+.chart-row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;}
+.legend-row2{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-secondary);}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.axis-label{font-size:10.5px;fill:var(--text-tertiary);font-family:'Inter',sans-serif;}
+.asset-label{font-size:10px;fill:var(--text-secondary);font-family:'Inter',sans-serif;}
+
+/* METHOD CARDS */
+.method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.method-card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:18px;transition:border-color .15s,transform .15s;}
+.method-card:hover{border-color:var(--border);transform:translateY(-2px);}
+.method-card .ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.method-card .ic svg{width:16px;height:16px;}
+.method-card h4{font-family:var(--font-display);font-size:13.5px;font-weight:600;margin-bottom:6px;}
+.method-card p{font-size:12px;color:var(--text-tertiary);line-height:1.55;}
+
+/* ADVISOR */
+.advisor-card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm);}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg-raised);color:var(--text-secondary);cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.ask-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.ask-row textarea{flex:1;min-width:220px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;color:var(--text-primary);font-size:13.5px;font-family:var(--font-body);resize:vertical;min-height:44px;outline:none;}
+.ask-row textarea:focus{border-color:var(--accent);}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:600;font-family:var(--font-body);border:1px solid var(--accent);background:var(--accent);color:#1A1305;cursor:pointer;transition:all .15s;box-shadow:0 4px 14px -4px rgba(232,163,61,.5);white-space:nowrap;}
+.btn:hover{background:#F0AD4E;border-color:#F0AD4E;}
+.btn:disabled{opacity:.6;cursor:default;transform:none;}
+.btn svg{width:15px;height:15px;}
+.answer{margin-top:16px;padding-top:16px;border-top:1px solid var(--border-soft);font-size:13.5px;color:var(--text-secondary);display:none;}
+.answer.show{display:block;}
+.answer .tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary);margin-top:10px;display:block;}
+
+footer{text-align:center;padding-top:10px;border-top:1px solid var(--border-soft);color:var(--text-tertiary);font-size:12px;}
+footer a{color:var(--accent);text-decoration:none;font-weight:600;}
+
+@media(max-width:760px){
+  .chart-row{grid-template-columns:1fr;}
+  .pipeline{flex-direction:column;gap:20px;}
+  .pl-node{padding:0;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="back-link" href="AssetIQ-Pro-with-Procurement.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Back to SmartAssetIQ</a>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="hub-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.8L20 9.5l-6.1 1.7L12 17l-1.9-5.8L4 9.5l6.1-1.7z"/></svg>AI Insights Hub</span>
+      <div class="user-chip" id="userChip" onclick="openProfileModal()" title="Edit your name and position">
+        <div class="av" id="userAvatar">JS</div>
+        <div class="txt"><b id="userNameDisplay">John Smith</b> · <span id="userRoleDisplay">Procurement Lead</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="profileModal">
+    <div class="modal">
+      <div class="modal-title">Edit profile</div>
+      <div class="ff"><label>Name</label><input type="text" id="pf_name" placeholder="e.g. Sarah Nangolo"></div>
+      <div class="ff" style="margin-bottom:18px;"><label>Position</label><input type="text" id="pf_role" placeholder="e.g. Fleet Manager"></div>
+      <button class="btn" style="width:100%;justify-content:center;" onclick="saveProfile()">Save profile</button>
+      <p style="color:var(--text-tertiary);font-size:11px;margin-top:12px;text-align:center;">Shared with the main SmartAssetIQ dashboard on this device.</p>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">How SmartAssetIQ's AI actually works</div>
+    <h1>From fleet data to <em>funded decisions</em>, explained.</h1>
+    <p class="lede">Every asset is scored the instant its data changes — no waiting on a model, no black box. This page walks through the scoring engine on the current demo fleet, and lets you ask the advisor a question directly.</p>
+    <div class="hero-stats" id="heroStats"></div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <div class="sec-eyebrow">Engine</div>
+      <div class="sec-title">How the engine decides</div>
+      <div class="sec-sub">Four stages run on every asset, every time the register changes — deterministic and instant, with an optional written narrative layered on top.</div>
+    </div>
+    <div class="card">
+      <div class="pipeline" id="pipeline"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="sec-eyebrow">Portfolio view</div>
+      <div class="sec-title">Risk vs. priority map</div>
+      <div class="sec-sub">Each bubble is one asset. Position shows urgency and risk; size shows how much of the annual procurement budget a replacement would consume.</div>
+    </div>
+    <div class="card">
+      <div class="chart-row">
+        <div>
+          <svg viewBox="0 0 560 340" id="scatterSvg" style="width:100%;height:auto;"></svg>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:10px;">Reading the map</div>
+          <div id="scatterList" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+      <div class="legend-row2" id="scatterLegend"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="sec-eyebrow">Methodology</div>
+      <div class="sec-title">What the model weighs</div>
+      <div class="sec-sub">Priority score blends four inputs, each auditable back to the asset register — nothing here is a guess.</div>
+    </div>
+    <div class="method-grid">
+      <div class="method-card">
+        <div class="ic" style="background:var(--danger-soft);color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10M12 22v-4"/><circle cx="12" cy="12" r="10"/></svg></div>
+        <h4>Condition &amp; urgency</h4>
+        <p>Blends repair spend as a share of replacement cost (60%) with how much of the asset's useful life has been consumed (40%).</p>
+      </div>
+      <div class="method-card">
+        <div class="ic" style="background:var(--success-soft);color:var(--success)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <h4>Financial case</h4>
+        <p>Net present value, internal rate of return and payback period of replacing now vs. running the current asset, at your discount rate.</p>
+      </div>
+      <div class="method-card">
+        <div class="ic" style="background:var(--info-soft);color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <h4>Data confidence</h4>
+        <p>Records with a purchase date, useful life, operating cost and salvage value score "High" confidence; thinner records are flagged and weighted down.</p>
+      </div>
+      <div class="method-card">
+        <div class="ic" style="background:var(--warning-soft);color:var(--warning)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8"/></svg></div>
+        <h4>Budget discipline</h4>
+        <p>Every "Replace" recommendation is checked against your annual procurement budget, so priority never ignores affordability.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="sec-eyebrow">Ask</div>
+      <div class="sec-title">Ask the fleet advisor</div>
+      <div class="sec-sub">Ask a plain-English question about the scored fleet below. It uses the same scored digest as the AI Recommendations page.</div>
+    </div>
+    <div class="advisor-card">
+      <div class="chips">
+        <button class="chip" onclick="askChip(this)">Which asset should we fund first?</button>
+        <button class="chip" onclick="askChip(this)">Where's the biggest risk hiding?</button>
+        <button class="chip" onclick="askChip(this)">What should we do about the forklift?</button>
+      </div>
+      <div class="ask-row">
+        <textarea id="askInput" placeholder="e.g. If we can only afford one replacement this quarter, which one and why?"></textarea>
+        <button class="btn" id="askBtn" onclick="askAdvisor()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg>Ask</button>
+      </div>
+      <div class="answer" id="advisorAnswer"></div>
+    </div>
+  </section>
+
+  <footer>
+    Demo data shown here mirrors the seed fleet in SmartAssetIQ. Connect your live register on the <a href="AssetIQ-Pro-with-Procurement.html">main dashboard</a> to score your own assets.
+  </footer>
+</div>
+
+<script>
+/* ===== Shared user profile (same localStorage key as SmartAssetIQ) ===== */
+const USER_KEY='aiq_user';
+const DEFAULT_USER={name:'John Smith',role:'Procurement Lead'};
+function initials(name){ const p=(name||'').trim().split(/\s+/).filter(Boolean); if(!p.length)return'?'; return (p[0][0]+(p[1]?p[1][0]:'')).toUpperCase(); }
+function loadUser(){ try{ return JSON.parse(localStorage.getItem(USER_KEY)); }catch(e){ return null; } }
+function renderUser(){
+  const u=loadUser()||DEFAULT_USER;
+  document.getElementById('userNameDisplay').textContent=u.name||'Unnamed user';
+  document.getElementById('userRoleDisplay').textContent=u.role||'—';
+  document.getElementById('userAvatar').textContent=initials(u.name);
+  return u;
+}
+function openProfileModal(){
+  const u=loadUser()||DEFAULT_USER;
+  document.getElementById('pf_name').value=u.name||'';
+  document.getElementById('pf_role').value=u.role||'';
+  document.getElementById('profileModal').classList.add('open');
+}
+function closeProfileModal(){ document.getElementById('profileModal').classList.remove('open'); }
+function saveProfile(){
+  const name=document.getElementById('pf_name').value.trim();
+  const role=document.getElementById('pf_role').value.trim();
+  if(!name){ document.getElementById('pf_name').focus(); return; }
+  localStorage.setItem(USER_KEY,JSON.stringify({name,role}));
+  currentUser={name,role};
+  renderUser(); closeProfileModal();
+}
+document.getElementById('profileModal').addEventListener('click',e=>{ if(e.target.id==='profileModal')closeProfileModal(); });
+let currentUser=renderUser();
+
+/* ===== Demo fleet — mirrors SmartAssetIQ's seed data ===== */
+const assets=[
+  {id:'AST-00031',name:'Toyota Hilux GP 4521',category:'Vehicle',price:385000,replacement:420000,repairs:95000,status:'active',purchaseDate:'2022-03-01',usefulLife:7,salvage:60000,opCost:48000},
+  {id:'AST-00030',name:'Generator Cat C9 250kVA',category:'Power',price:612000,replacement:650000,repairs:410000,status:'repair',purchaseDate:'2019-06-15',usefulLife:10,salvage:80000,opCost:52000},
+  {id:'AST-00864',name:'Excavator CAT 320 GC',category:'Construction',price:1240000,replacement:1450000,repairs:180000,status:'active',purchaseDate:'2021-01-10',usefulLife:8,salvage:150000,opCost:95000},
+  {id:'AST-00798',name:'Forklift Toyota 8FGU25',category:'Warehouse',price:198500,replacement:215000,repairs:152000,status:'out',purchaseDate:'2018-09-01',usefulLife:6,salvage:15000,opCost:22000},
+  {id:'AST-00712',name:'Dell Latitude 5440 (x12)',category:'IT equipment',price:144000,replacement:156000,repairs:12000,status:'storage',purchaseDate:'2023-11-01',usefulLife:4,salvage:10000,opCost:8000}
+];
+const finSettings={discountRate:12,budget:2000000};
+const fmt=n=>'N$'+Math.round(n||0).toLocaleString();
+
+/* ===== Whole-life + AI engine (mirrors SmartAssetIQ) ===== */
+function assetAgeYears(a){ if(!a.purchaseDate)return 0; const ms=Date.now()-new Date(a.purchaseDate).getTime(); return Math.max(0,ms/(1000*60*60*24*365.25)); }
+function repairPct(a){ if(!a.replacement||a.replacement<=0)return 0; return Math.round((a.repairs/a.replacement)*100); }
+function remainingUsefulLife(a){ return Math.max(0,(a.usefulLife||0)-assetAgeYears(a)); }
+function equivalentAnnualCost(a){ const life=a.usefulLife||1; const lifetimeCost=(a.price-(a.salvage||0))+(a.repairs||0)+((a.opCost||0)*life); return lifetimeCost/life; }
+function replacementUrgencyScore(a){ const lifeConsumedPct=a.usefulLife?Math.min(100,(assetAgeYears(a)/a.usefulLife)*100):0; return Math.round(repairPct(a)*0.6+lifeConsumedPct*0.4); }
+function aiConfidence(a){ let pts=0; if(a.purchaseDate)pts++; if(a.usefulLife)pts++; if(a.opCost)pts++; if(a.salvage!==undefined&&a.salvage!==null&&a.salvage!=='')pts++; if(pts>=4)return'High'; if(pts>=2)return'Medium'; return'Low'; }
+function categoryRiskFactor(cat){ return {Vehicle:40,Power:55,Construction:50,Warehouse:35,'IT equipment':60,Other:45}[cat]||45; }
+function replacementCashflow(a){ const age=assetAgeYears(a); const repairRunRate=age>0?(a.repairs||0)/age:0; const oldAnnualCost=(a.opCost||0)+repairRunRate; const newAnnualCost=(a.opCost||0)*0.85; return Math.max(0,oldAnnualCost-newAnnualCost); }
+function npvSeries(a){ const n=Math.max(1,Math.round(a.usefulLife||5)); const C0=a.replacement||a.price||0; const cf=replacementCashflow(a); const arr=[-C0]; for(let t=1;t<n;t++)arr.push(cf); arr.push(cf+(a.salvage||0)); return arr; }
+function npvAtRate(arr,r){ return arr.reduce((s,c,t)=>s+c/Math.pow(1+r,t),0); }
+function npv(a){ return npvAtRate(npvSeries(a),(finSettings.discountRate||12)/100); }
+function irr(a){ const arr=npvSeries(a); if(arr.slice(1).every(c=>c<=0))return null; let lo=null,hi=null; for(let r=-0.9;r<5;r+=0.02){ if(npvAtRate(arr,r)*npvAtRate(arr,r+0.02)<0){lo=r;hi=r+0.02;break;} } if(lo===null)return null; for(let i=0;i<60;i++){ const mid=(lo+hi)/2; const fMid=npvAtRate(arr,mid); if(Math.abs(fMid)<1)return mid; if((npvAtRate(arr,lo)<0)===(fMid<0))lo=mid; else hi=mid; } return (lo+hi)/2; }
+function paybackPeriod(a){ const cf=replacementCashflow(a); if(cf<=0)return null; return (a.replacement||a.price||0)/cf; }
+function riskScore(a){ const conf=aiConfidence(a); const confRisk=conf==='Low'?80:conf==='Medium'?45:15; const pb=paybackPeriod(a); const pbRisk=pb===null?100:Math.min(100,pb*12); const theIrr=irr(a); const r=(finSettings.discountRate||12)/100; const irrRisk=theIrr===null?90:(theIrr<r?Math.min(100,(r-theIrr)*300+40):Math.max(0,40-(theIrr-r)*200)); const score=0.3*categoryRiskFactor(a.category)+0.25*confRisk+0.25*pbRisk+0.2*irrRisk; return Math.round(Math.max(0,Math.min(100,score))); }
+function priorityScore(a){ const urgency=replacementUrgencyScore(a); const C0=a.replacement||a.price||1; const npvScore=Math.max(0,Math.min(100,50+(npv(a)/C0)*50)); const theIrr=irr(a); const r=(finSettings.discountRate||12)/100; const irrScore=theIrr===null?20:Math.max(0,Math.min(100,50+(theIrr-r)*200)); const risk=riskScore(a); const score=0.35*urgency+0.3*npvScore+0.2*irrScore+0.15*(100-risk); return Math.round(Math.max(0,Math.min(100,score))); }
+function budgetImpact(a){ return ((a.replacement||a.price||0)/(finSettings.budget||1))*100; }
+function aiRecommend(a){
+  const urgency=replacementUrgencyScore(a); const rp=repairPct(a); const life=remainingUsefulLife(a);
+  let rec,color;
+  if(a.status==='out'||urgency>=70||rp>=60){ rec='Replace'; color='var(--danger)'; }
+  else if(urgency>=45||rp>=35||(life<=0.75&&life>0)){ rec='Repair & monitor'; color='var(--warning)'; }
+  else if(a.status==='storage'){ rec='Review utilisation'; color='var(--info)'; }
+  else{ rec='Keep in service'; color='var(--success)'; }
+  return{rec,color,urgency};
+}
+const scored=assets.map(a=>({a,r:aiRecommend(a),fin:{npv:npv(a),irr:irr(a),payback:paybackPeriod(a),risk:riskScore(a),priority:priorityScore(a),budget:budgetImpact(a)}}));
+
+/* ===== Hero stats ===== */
+const nReplace=scored.filter(s=>s.r.rec==='Replace').length;
+const portfolioNpv=scored.filter(s=>s.r.rec==='Replace').reduce((s,x)=>s+x.fin.npv,0);
+const avgRisk=Math.round(scored.reduce((s,x)=>s+x.fin.risk,0)/scored.length);
+const avgConfHigh=assets.filter(a=>aiConfidence(a)==='High').length;
+document.getElementById('heroStats').innerHTML=`
+  <div class="hstat"><div class="v">${assets.length}</div><div class="l">Assets scored, instantly</div></div>
+  <div class="hstat"><div class="v" style="color:${nReplace>0?'var(--danger)':'var(--success)'}">${nReplace}</div><div class="l">Flagged to replace now</div></div>
+  <div class="hstat"><div class="v" style="color:${portfolioNpv>=0?'var(--success)':'var(--danger)'}">${fmt(portfolioNpv)}</div><div class="l">Portfolio NPV of replacements</div></div>
+  <div class="hstat"><div class="v">${avgConfHigh}/${assets.length}</div><div class="l">Records at High data confidence</div></div>`;
+
+/* ===== Pipeline ===== */
+const PIPE=[
+  {t:'Data intake',d:'Purchase price, repairs, age, useful life and operating cost pulled straight from the asset register.',ic:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>'},
+  {t:'Whole-life cost model',d:'Depreciation, book value and equivalent annual cost calculated for every asset.',ic:'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>'},
+  {t:'Financial appraisal',d:'NPV, IRR and payback period of replacing now, discounted at your chosen rate.',ic:'<path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>'},
+  {t:'Priority ranking',d:'Urgency, financial case, risk and confidence combine into one 0–100 priority score.',ic:'<path d="M12 2l1.9 5.8L20 9.5l-6.1 1.7L12 17l-1.9-5.8L4 9.5l6.1-1.7z"/>'}
+];
+document.getElementById('pipeline').innerHTML=PIPE.map((s,i)=>`<div class="pl-node">${i>0?'<div class="pl-track"><div class="runner"></div></div>':''}<div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.ic}</svg></div><h4>${s.t}</h4><p>${s.d}</p></div>`).join('');
+
+/* ===== Scatter chart: urgency (x) vs risk (y), bubble = budget impact ===== */
+const W=560,H=340,PAD=42;
+const colorFor=rec=>rec==='Replace'?'var(--danger)':rec==='Repair & monitor'?'var(--warning)':rec==='Review utilisation'?'var(--info)':'var(--success)';
+function sx(v){ return PAD+(v/100)*(W-PAD-20); }
+function sy(v){ return H-PAD-(v/100)*(H-PAD-20); }
+let svg=`<line x1="${PAD}" y1="${H-PAD}" x2="${W-20}" y2="${H-PAD}" stroke="var(--border)" stroke-width="1"/>
+<line x1="${PAD}" y1="20" x2="${PAD}" y2="${H-PAD}" stroke="var(--border)" stroke-width="1"/>`;
+[0,25,50,75,100].forEach(v=>{
+  svg+=`<line x1="${sx(v)}" y1="20" x2="${sx(v)}" y2="${H-PAD}" stroke="var(--border-soft)" stroke-width="1"/>`;
+  svg+=`<line x1="${PAD}" y1="${sy(v)}" x2="${W-20}" y2="${sy(v)}" stroke="var(--border-soft)" stroke-width="1"/>`;
+});
+svg+=`<text class="axis-label" x="${W-24}" y="${H-PAD+18}" text-anchor="end">Urgency →</text>
+<text class="axis-label" x="${PAD-6}" y="16" text-anchor="start">↑ Risk</text>`;
+scored.forEach(({a,r,fin})=>{
+  const cx=sx(r.urgency), cy=sy(fin.risk);
+  const rad=Math.max(8,Math.min(30,6+fin.budget*0.6));
+  const c=colorFor(r.rec);
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${c}" fill-opacity="0.22" stroke="${c}" stroke-width="1.6"/>`;
+  svg+=`<text class="asset-label" x="${cx}" y="${cy-rad-6}" text-anchor="middle">${a.name.split(' ').slice(0,2).join(' ')}</text>`;
+});
+document.getElementById('scatterSvg').innerHTML=svg;
+document.getElementById('scatterLegend').innerHTML=[
+  ['Replace','var(--danger)'],['Repair & monitor','var(--warning)'],['Review utilisation','var(--info)'],['Keep in service','var(--success)']
+].map(([l,c])=>`<div class="leg-item"><span class="leg-dot" style="background:${c}"></span>${l}</div>`).join('');
+document.getElementById('scatterList').innerHTML=[...scored].sort((x,y)=>y.fin.priority-x.fin.priority).map(({a,r,fin})=>
+  `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);font-size:12.5px">
+    <span style="color:var(--text-primary);font-weight:500">${a.name}</span>
+    <span style="font-weight:700;color:${colorFor(r.rec)}">${r.rec}</span>
+  </div>`).join('');
+
+/* ===== Ask the fleet advisor ===== */
+function buildDigest(){
+  return scored.map(({a,r,fin})=>({name:a.name,category:a.category,status:a.status,urgency:r.urgency,recommendation:r.rec,npv:Math.round(fin.npv),irrPct:fin.irr===null?null:Number((fin.irr*100).toFixed(1)),paybackYears:fin.payback===null?null:Number(fin.payback.toFixed(1)),riskScore:fin.risk,priorityScore:fin.priority,budgetImpactPct:Number(fin.budget.toFixed(1))})).sort((x,y)=>y.priorityScore-x.priorityScore);
+}
+function localAdvisorAnswer(q,digest){
+  const top=digest[0];
+  return `Locally-composed answer (no AI call available here): based on the scored fleet, <b>${top.name}</b> carries the highest priority score (${top.priorityScore}/100) with a recommendation of <b>${top.recommendation}</b>, NPV of ${fmt(top.npv)} and a ${top.paybackYears??'N/A'}-year payback. Open the full AI Recommendations page in SmartAssetIQ for the complete scored table and financial appraisal behind this.`;
+}
+function askChip(btn){ document.getElementById('askInput').value=btn.textContent; askAdvisor(); }
+async function askAdvisor(){
+  const q=document.getElementById('askInput').value.trim();
+  if(!q){ document.getElementById('askInput').focus(); return; }
+  const btn=document.getElementById('askBtn'); const ansEl=document.getElementById('advisorAnswer');
+  const digest=buildDigest();
+  btn.disabled=true; const old=btn.innerHTML; btn.innerHTML='Thinking…';
+  ansEl.classList.add('show'); ansEl.innerHTML='<p style="color:var(--text-tertiary)">Thinking…</p>';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        messages:[{role:'user',content:`You are SmartAssetIQ's fleet procurement advisor, speaking to ${currentUser.name}${currentUser.role?' ('+currentUser.role+')':''}. Given this JSON array of scored assets (urgency/riskScore/priorityScore are 0-100, higher = more urgent/risky/important; npv in currency; irrPct and budgetImpactPct as percentages; paybackYears in years), answer the user's question in 2-4 plain-English sentences, grounded in the specific numbers. No markdown, no bullet lists, just prose.\n\nQuestion: ${q}\n\nScored fleet:\n${JSON.stringify(digest)}`}]
+      })
+    });
+    if(!resp.ok)throw new Error('API error '+resp.status);
+    const data=await resp.json();
+    const text=(data.content||[]).map(c=>c.text||'').join('\n').trim();
+    if(!text)throw new Error('Empty response');
+    ansEl.innerHTML=`<p>${text.replace(/\n+/g,'</p><p>')}</p><span class="tag">Generated by Claude</span>`;
+  }catch(err){
+    ansEl.innerHTML=`<p>${localAdvisorAnswer(q,digest)}</p><span class="tag">Local fallback — AI call unavailable</span>`;
+  }finally{
+    btn.disabled=false; btn.innerHTML=old;
+  }
+}
+</script>
+</body>
+</html>
